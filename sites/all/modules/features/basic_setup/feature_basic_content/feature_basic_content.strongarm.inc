@@ -275,7 +275,7 @@ function feature_basic_content_strongarm() {
           'weight' => '0',
         ),
         'path' => array(
-          'weight' => '10',
+          'weight' => '2',
         ),
       ),
       'display' => array(),

@@ -4,6 +4,9 @@ core = 7.x
 package = Custom
 configure = admin/config/menu-block-placement
 
+dependencies[] = views
+dependencies[] = menu
+
 files[] = includes/menu_block_placement.views.inc
 files[] = includes/views_plugin_argument_default_menu_block_placement.inc
 files[] = includes/views_plugin_argument_default_menu_block_placement_per_path.inc

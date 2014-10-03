@@ -232,49 +232,13 @@ function feature_basic_content_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-basic_block-field_basic_block_menu_item'
-  $field_instances['node-basic_block-field_basic_block_menu_item'] = array(
-    'bundle' => 'basic_block',
-    'default_value' => array(
-      0 => array(
-        'mlid' => NULL,
-      ),
-    ),
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 2,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_basic_block_menu_item',
-    'label' => 'Menu Item',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'options',
-      'settings' => array(
-        'apply_chosen' => '',
-      ),
-      'type' => 'options_select',
-      'weight' => 1,
-    ),
-  );
-
   // Exported field_instance: 'node-basic_block-field_basic_block_settings'
   $field_instances['node-basic_block-field_basic_block_settings'] = array(
     'bundle' => 'basic_block',
     'default_value' => array(
       0 => array(
-        'region' => 'preface_first',
-        'individual_pages' => 0,
+        'mlid' => array(),
+        'region' => 'footer',
       ),
     ),
     'deleted' => 0,
@@ -352,7 +316,7 @@ function feature_basic_content_field_default_field_instances() {
     'bundle' => 'basic_slideshow',
     'default_value' => array(
       0 => array(
-        'mlid' => NULL,
+        'mlid' => array(),
       ),
     ),
     'deleted' => 0,
@@ -379,13 +343,13 @@ function feature_basic_content_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
-      'module' => 'options',
+      'active' => 0,
+      'module' => 'menu_block_placement',
       'settings' => array(
         'apply_chosen' => '',
       ),
-      'type' => 'options_select',
-      'weight' => 30,
+      'type' => 'menu_block_placement_widget',
+      'weight' => 1,
     ),
   );
 
@@ -453,7 +417,7 @@ function feature_basic_content_field_default_field_instances() {
       'module' => 'field_collection',
       'settings' => array(),
       'type' => 'field_collection_embed',
-      'weight' => 20,
+      'weight' => 3,
     ),
   );
 
@@ -468,7 +432,6 @@ function feature_basic_content_field_default_field_instances() {
   t('Image');
   t('Image Caption');
   t('Image\'s Link');
-  t('Menu Item');
   t('Slideshow Assignment');
   t('Slideshow Images');
 

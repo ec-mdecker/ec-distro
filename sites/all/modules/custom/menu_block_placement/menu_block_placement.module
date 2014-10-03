@@ -8,15 +8,19 @@
  * Implements hook_field_info().
  */
 function menu_block_placement_field_info() {
-
   return array(
     'menu_block_placement_reference' => array(
       'label' => t('Menu Block Placement'),
       'description' => t('This field allows the user to use the menu to place blocks on pages and sub pages.'),
       'default_widget' => 'menu_block_placement_widget',
-      'default_formatter' => 'list_default',
-      'behaviors' => array(
-        'multiple values' => FIELD_BEHAVIOR_CUSTOM,
+      'default_formatter' => 'text_default',
+      'settings' => array(
+        'default_menus' => array(),
+        'default_selects' => array(
+          'menu' => 'menu',
+          'region' => 'region',
+          'individ' => 'individ',
+        ),
       ),
     ),
   );
@@ -28,61 +32,10 @@ function menu_block_placement_field_info() {
 function menu_block_placement_field_widget_info() {
   return array(
     'menu_block_placement_widget' => array(
-      'label' => t('Menu Block Placement Add. Settings'),
+      'label' => t('Menu Block Placement'),
       'field types' => array('menu_block_placement_reference'),
     )
   );
-}
-
-/*
- * Implements hook_flush_caches().
- */
-function menu_block_placement_flush_caches(){
-  //resets region variables on a cache clear.
-  _menu_block_placement_regions();
-}
-
-/*
- * Implements hook_field_widget_form().
- */
-function menu_block_placement_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-  $regions = variable_get('menu_block_placement_regions');
-
-  //select list for the regions as established in the theme info file
-  $element['region'] = array(
-    '#type' => 'select',
-    '#title' => t('Region'),
-    '#options' => $regions,
-    '#required' => TRUE,
-    '#default_value' => isset($items[0]['region']) ? $items[0]['region'] : '',
-  );
-  //checkbox to apply to only the individual page, not children
-  $element['individual_pages'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Display only on the selected pages'),
-    '#default_value' => isset($items[0]['individual_pages']) ? $items[0]['individual_pages'] : '',
-  );
-  return $element;
-}
-
-/**
- * Implements hook_field_formatter_view().
- */
-function menu_block_placement_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-  $element = array();
-
-  switch ($display['type']) {
-    case 'list_default':
-      $allowed_values = list_allowed_values($field, $instance, $entity_type, $entity);
-
-      foreach ($items as $delta => $item) {
-        if (isset($item['mlid'])) {
-          $element[$delta] = array('#markup' => field_filter_xss($item['mlid']));
-        }
-      }
-      break;
-  }
-  return $element;
 }
 
 /**
@@ -91,68 +44,68 @@ function menu_block_placement_field_formatter_view($entity_type, $entity, $field
 function menu_block_placement_field_settings_form($field, $instance) {
   $defaults = field_info_field_settings($field['type']);
   $settings = array_merge($defaults, $field['settings']);
-
   $menus = menu_get_menus();
 
   $options = array();
   foreach ($menus as $key => $menu) {
     $options[$key] = $menu;
   }
-  if (!isset($settings['default_menus'])) {
-    $settings['default_menus'] = array();
-  }
 
+  //choose which select boxes are desired
+  $form['default_selects'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Default Select Lists'),
+    '#options' => array(
+      'menu' => 'Include Menu Select List',
+      'region' => 'Include Region Select List',
+      'individ' => 'Include \'Individual Pages\' checkbox',
+    ),
+    '#default_value' => $settings['default_selects'],
+    '#description' => t('Which select lists to include in the widget.<br>WARNING: These settings can not be altered after data has been entered.'),
+  );
+
+  //choose from the available menus, which to include in the dropdown.
   $form['default_menus'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Default Menu Options'),
     '#options' => $options,
     '#default_value' => $settings['default_menus'],
-    '#description' => t('Select which menus will be availible to the content editor'),
+    '#states' => array(
+      'invisible' => array(
+        ':input[name="field[settings][default_selects][menu]"]'=> array('checked'=> FALSE),
+      ),
+    ),
+    '#description' => t('Select which menus will be available to the content editor.<br>WARNING: These settings can not be altered after data has been entered.'),
   );
 
+  if (field_has_data($field['field_name'])) {
+    $form['default_selects']['#disabled'] = TRUE;
+    $form['default_menus']['#disabled'] = TRUE;
+  }
+
   return $form;
-
 }
 
-/**
- * Implements hook_field_widget_info_alter().
- */
-function menu_block_placement_field_widget_info_alter(&$info) {
-  $info['options_select']['field types'][] = 'menu_block_placement_reference';
-}
 
-/**
- * Immplements hook_options_list().
+/*
+ * Implements hook_field_widget_form().
  */
-function menu_block_placement_options_list($field, $instance, $entity_type, $entity) {
-  //return menu_block_placement_options_callback();
+function menu_block_placement_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  $regions = variable_get('menu_block_placement_regions');
   if (isset($field["settings"]["default_menus"])) {
     $default_menus = $field["settings"]["default_menus"];
-  }
-  else {
-    return FALSE;
-  }
-
-  foreach ($default_menus as $key => $value) {
-    if ($value === 0) {
-      unset($default_menus[$key]);
+    foreach ($default_menus as $key => $value) {
+      if ($value === 0) {
+        unset($default_menus[$key]);
+      }
     }
-  }
-  $settings_form_shown = FALSE;
-  if (!empty($entity)) {
-    $settings_form_shown = TRUE;
-  }
 
-  $options = array();
-  if ($settings_form_shown === TRUE) {
     $options = array();
-    $items = menu_parent_options($default_menus, array("mlid" => 0));
-
-    foreach ($items as $key => $value) {
+    $menu_items = menu_parent_options($default_menus, array("mlid" => 0));
+    foreach ($menu_items as $key => $value) {
       $exploded_key = explode(":", $key);
       $menu_machine_name = ucwords(str_replace("-", " ", array_shift($exploded_key)));
       $menu_id = array_pop($exploded_key);
-
       if ($menu_id != 0) {
         $options[$menu_machine_name][$menu_id] = str_replace(array(
           "<",
@@ -161,7 +114,143 @@ function menu_block_placement_options_list($field, $instance, $entity_type, $ent
       }
     }
   }
-  return $options;
+
+
+  if (isset($form['nid']['#value']) && isset($items[0]['mlid'])) {
+    $field_name = $instance['field_name'];
+    $items[0]['mlid'] = array();
+    $data = db_select('field_data_' . $field_name, 'f')
+      ->fields('f', array($field_name . '_mlid'))
+      ->condition('entity_id', $form['nid']['#value'])
+      ->condition('revision_id', $form['vid']['#value'])
+      ->execute();
+    $field_name .= '_mlid';
+    foreach ($data as $row) {
+      $items[0]['mlid'][] = $row->$field_name;
+    }
+  }
+
+
+  if (isset($field['settings']['default_selects']) && $field['settings']['default_selects']['menu']) {
+    $element['mlid'] = array(
+      '#type' => 'select',
+      '#title' => t('Menu Item'),
+      '#options' => $options,
+      '#multiple' => TRUE,
+      '#required' => $instance['required'],
+      '#default_value' => isset($items[0]['mlid']) ? $items[0]['mlid'] : '',
+    );
+  }
+
+  if (isset($field['settings']['default_selects']) && $field['settings']['default_selects']['region']) {
+    $element['region'] = array(
+      '#type' => 'select',
+      '#title' => t('Region'),
+      '#options' => $regions,
+      '#required' => $instance['required'],
+      '#empty_option' => t('- None -'),
+      '#default_value' => isset($items[0]['region']) ? $items[0]['region'] : array(0 => 0),
+    );
+  }
+  if (isset($field['settings']['default_selects']) && $field['settings']['default_selects']['individ']) {
+    $element['individual_pages'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Display only on the selected pages'),
+      '#default_value' => isset($items[0]['individual_pages']) ? $items[0]['individual_pages'] : 0,
+    );
+  }
+  return $element;
+}
+
+/**
+ *  Implements hook_node_insert().
+ */
+function menu_block_placement_node_insert($node) {
+  menu_block_placement_node_update($node);
+}
+
+/**
+ *  Implements hook_node_update().
+ */
+function menu_block_placement_node_update($node) {
+  foreach ($node as $key => $value) {
+    if (substr($key, 0, 5) == 'field') {
+      if (isset($value['und']) && isset($value['und'][0]) && isset($value['und'][0]['mlid'])) {
+        db_delete('field_data_' . $key)
+          ->condition('entity_id', $node->nid)
+          ->condition('revision_id', $node->vid)
+          ->execute();
+
+        db_delete('field_revision_' . $key)
+          ->condition('entity_id', $node->nid)
+          ->condition('revision_id', $node->vid)
+          ->execute();
+
+
+        $i = 0;
+        foreach ($value['und'] as $data) {
+          $new_data = array(
+            'entity_type' => 'node',
+            'bundle' => $node->type,
+            'entity_id' => $node->nid,
+            'revision_id' => $node->vid,
+            'delta' => $i,
+            'language' => 'und',
+            $key . '_mlid' => $data['mlid'],
+          );
+          if(isset($data['region'])){
+            $new_data[$key . '_region'] = $data['region'];
+          }
+          if(isset($data['individual_pages'])){
+            $new_data[$key . '_individual_pages'] = $data['individual_pages'];
+          }
+
+          $i++;
+
+          db_insert('field_data_' . $key)
+            ->fields($new_data)
+            ->execute();
+
+          db_insert('field_revision_' . $key)
+            ->fields($new_data)
+            ->execute();
+        }
+      }
+    }
+  }
+}
+
+/**
+ *  Implements hook_node_delete().
+ */
+function menu_block_placement_node_delete($node) {
+  foreach ($node as $key => $value) {
+    if (substr($key, 0, 5) == 'field') {
+      if (isset($value['und']) && isset($value['und'][0]) && isset($value['und'][0]['mlid'])) {
+        db_delete('field_data_' . $key)
+          ->condition('entity_id', $node->nid)
+          ->execute();
+
+        db_delete('field_revision_' . $key)
+          ->condition('entity_id', $node->nid)
+          ->execute();
+      }
+    }
+  }
+}
+
+function menu_block_placement_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items) {
+  $data = array();
+  if(isset($items[0]['mlid'])) {
+    foreach ($items[0]['mlid'] as $mlid) {
+      $data[] = array(
+        'mlid' => $mlid,
+        'region' => isset($items[0]['region']) ? $items[0]['region'] : null,
+        'individual_pages' => isset($items[0]['individual_pages']) ? $items[0]['individual_pages'] : null,
+      );
+    }
+    $items = $data;
+  }
 }
 
 /**
@@ -175,10 +264,7 @@ function menu_block_placement_field_widget_error($element, $error, $form, &$form
  * Implements hook_field_is_empty().
  */
 function menu_block_placement_field_is_empty($item, $field) {
-  if (!is_array($item)) {
-    return TRUE;
-  }
-  return FALSE;
+  return !is_array($item) ? TRUE : FALSE;
 }
 
 
@@ -192,14 +278,25 @@ function menu_block_placement_views_api() {
   );
 }
 
-function _menu_block_placement_regions(){
+/*
+ * resets region variables on a cache clear.
+ *
+ * Implements hook_flush_caches().
+ */
+function menu_block_placement_flush_caches() {
+  _menu_block_placement_regions();
+}
+
+
+//helper function to set the variable for available regions in the select list
+function _menu_block_placement_regions() {
   //creates the array for the regions select list
   $available_regions = array();
   $path_to_info = drupal_get_path('theme', variable_get('theme_default', NULL)) . '/' . variable_get('theme_default', NULL) . '.info';
   $theme_settings = drupal_parse_info_file($path_to_info);
   if (isset($theme_settings['settings']['menu_block_placement'])) {
     foreach ($theme_settings['settings']['menu_block_placement'] as $key => $value) {
-      if ($value) {
+      if ($value && isset($theme_settings['regions'][$key])) {
         $available_regions[$key] = $theme_settings['regions'][$key];
       }
     }
@@ -212,26 +309,5 @@ function _menu_block_placement_regions(){
   }
 
   //sets the variable for use in the field.
-  variable_set('menu_block_placement_regions',$available_regions);
+  variable_set('menu_block_placement_regions', $available_regions);
 }
-
-
-/*function menu_block_placement_field_widget_form_alter(&$element, &$form_state, $context) {
-
-  // Add a css class to widget form elements for all fields of type mytype.
-  if ($context['field']['type'] == 'mytype') {
-    // Be sure not to overwrite existing attributes.
-    $element['#attributes']['class'][] = 'myclass';
-  }
-}*/
-
-/*function menu_block_placement_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-  die("hello");
-  $element += array(
-    '#type' => $instance['widget']['type'],
-    '#default_value' => isset($items[$delta]) ? $items[$delta] : '',
-  );
-  return array('value' => $element);
-}*/
-
-

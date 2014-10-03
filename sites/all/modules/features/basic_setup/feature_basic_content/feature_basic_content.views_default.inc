@@ -55,29 +55,29 @@ function feature_basic_content_views_default_views() {
   $handler->display->display_options['arguments']['field_basic_block_settings_region']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_basic_block_settings_region']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['field_basic_block_settings_region']['limit'] = '0';
-  /* Contextual filter:  Content: Menu Item:mlid (Cascading)  */
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid']['id'] = 'field_basic_block_menu_item_mlid';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid']['table'] = 'field_data_field_basic_block_menu_item';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid']['field'] = 'field_basic_block_menu_item_mlid';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid']['ui_name'] = ' Content: Menu Item:mlid (Cascading) ';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid']['default_action'] = 'default';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid']['default_argument_type'] = 'menu_block_placement_mlid';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid']['summary']['number_of_records'] = '0';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid']['summary']['format'] = 'default_summary';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid']['summary_options']['items_per_page'] = '25';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid']['limit'] = '0';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid']['break_phrase'] = TRUE;
-  /* Contextual filter: Content: Menu Item:mlid (Per Path) */
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid_1']['id'] = 'field_basic_block_menu_item_mlid_1';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid_1']['table'] = 'field_data_field_basic_block_menu_item';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid_1']['field'] = 'field_basic_block_menu_item_mlid';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid_1']['ui_name'] = 'Content: Menu Item:mlid (Per Path)';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid_1']['default_action'] = 'default';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid_1']['default_argument_type'] = 'menu_block_placement_mlid_per_node';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid_1']['summary']['number_of_records'] = '0';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid_1']['summary']['format'] = 'default_summary';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid_1']['summary_options']['items_per_page'] = '25';
-  $handler->display->display_options['arguments']['field_basic_block_menu_item_mlid_1']['limit'] = '0';
+  /* Contextual filter: Content: Block Settings:mlid (Cascade) */
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid_1']['id'] = 'field_basic_block_settings_mlid_1';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid_1']['table'] = 'field_data_field_basic_block_settings';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid_1']['field'] = 'field_basic_block_settings_mlid';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid_1']['ui_name'] = 'Content: Block Settings:mlid (Cascade)';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid_1']['default_action'] = 'default';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid_1']['default_argument_type'] = 'menu_block_placement_mlid';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid_1']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid_1']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid_1']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid_1']['limit'] = '0';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid_1']['break_phrase'] = TRUE;
+  /* Contextual filter: Content: Block Settings:mlid (Per Path) */
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid']['id'] = 'field_basic_block_settings_mlid';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid']['table'] = 'field_data_field_basic_block_settings';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid']['field'] = 'field_basic_block_settings_mlid';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid']['ui_name'] = 'Content: Block Settings:mlid (Per Path)';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid']['default_action'] = 'default';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid']['default_argument_type'] = 'menu_block_placement_mlid_per_node';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_basic_block_settings_mlid']['limit'] = '0';
   $handler->display->display_options['filter_groups']['operator'] = 'OR';
   /* Filter criterion: Content: Block Settings (field_basic_block_settings:individual_pages) */
   $handler->display->display_options['filters']['field_basic_block_settings_individual_pages_1']['id'] = 'field_basic_block_settings_individual_pages_1';

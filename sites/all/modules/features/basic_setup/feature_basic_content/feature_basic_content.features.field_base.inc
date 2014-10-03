@@ -55,33 +55,6 @@ function feature_basic_content_field_default_field_bases() {
     'type' => 'insert_view_generator',
   );
 
-  // Exported field_base: 'field_basic_block_menu_item'
-  $field_bases['field_basic_block_menu_item'] = array(
-    'active' => 1,
-    'cardinality' => -1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_basic_block_menu_item',
-    'foreign keys' => array(),
-    'indexes' => array(),
-    'locked' => 0,
-    'module' => 'menu_block_placement',
-    'settings' => array(
-      'default_menus' => array(
-        'devel' => 0,
-        'features' => 0,
-        'main-menu' => 'main-menu',
-        'management' => 0,
-        'menu-footer-nav' => 0,
-        'menu-sticky-nav' => 0,
-        'navigation' => 0,
-        'user-menu' => 0,
-      ),
-    ),
-    'translatable' => 0,
-    'type' => 'menu_block_placement_reference',
-  );
-
   // Exported field_base: 'field_basic_block_settings'
   $field_bases['field_basic_block_settings'] = array(
     'active' => 1,
@@ -99,10 +72,13 @@ function feature_basic_content_field_default_field_bases() {
         'features' => 0,
         'main-menu' => 'main-menu',
         'management' => 0,
-        'menu-footer-nav' => 0,
-        'menu-sticky-nav' => 0,
         'navigation' => 0,
         'user-menu' => 0,
+      ),
+      'default_selects' => array(
+        'individ' => 'individ',
+        'menu' => 'menu',
+        'region' => 'region',
       ),
     ),
     'translatable' => 0,
@@ -112,7 +88,7 @@ function feature_basic_content_field_default_field_bases() {
   // Exported field_base: 'field_basic_slideshow_assignment'
   $field_bases['field_basic_slideshow_assignment'] = array(
     'active' => 1,
-    'cardinality' => -1,
+    'cardinality' => 1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_basic_slideshow_assignment',
@@ -124,12 +100,17 @@ function feature_basic_content_field_default_field_bases() {
       'allowed_values' => array(),
       'allowed_values_function' => '',
       'default_menus' => array(
+        'devel' => 0,
+        'features' => 0,
         'main-menu' => 'main-menu',
         'management' => 0,
-        'menu-footer-utility' => 0,
-        'menu-sticky-nav' => 0,
         'navigation' => 0,
         'user-menu' => 0,
+      ),
+      'default_selects' => array(
+        'individ' => 0,
+        'menu' => 'menu',
+        'region' => 0,
       ),
     ),
     'translatable' => 0,
