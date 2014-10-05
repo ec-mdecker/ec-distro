@@ -13,15 +13,15 @@ function menu_block_placement_field_info() {
       'label' => t('Menu Block Placement'),
       'description' => t('This field allows the user to use the menu to place blocks on pages and sub pages.'),
       'default_widget' => 'menu_block_placement_widget',
-      'default_formatter' => 'text_default',
+      'default_formatter' => 'menu_block_placement_formatter',
       'settings' => array(
         'default_menus' => array(),
         'default_selects' => array(
-          'menu' => 'menu',
           'region' => 'region',
           'individ' => 'individ',
         ),
       ),
+
     ),
   );
 }
@@ -44,19 +44,13 @@ function menu_block_placement_field_widget_info() {
 function menu_block_placement_field_settings_form($field, $instance) {
   $defaults = field_info_field_settings($field['type']);
   $settings = array_merge($defaults, $field['settings']);
-  $menus = menu_get_menus();
-
-  $options = array();
-  foreach ($menus as $key => $menu) {
-    $options[$key] = $menu;
-  }
+  $options = menu_get_menus();
 
   //choose which select boxes are desired
   $form['default_selects'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Default Select Lists'),
     '#options' => array(
-      'menu' => 'Include Menu Select List',
       'region' => 'Include Region Select List',
       'individ' => 'Include \'Individual Pages\' checkbox',
     ),
@@ -70,14 +64,10 @@ function menu_block_placement_field_settings_form($field, $instance) {
     '#title' => t('Default Menu Options'),
     '#options' => $options,
     '#default_value' => $settings['default_menus'],
-    '#states' => array(
-      'invisible' => array(
-        ':input[name="field[settings][default_selects][menu]"]'=> array('checked'=> FALSE),
-      ),
-    ),
     '#description' => t('Select which menus will be available to the content editor.<br>WARNING: These settings can not be altered after data has been entered.'),
   );
 
+  //if data has been entered, disable the fields
   if (field_has_data($field['field_name'])) {
     $form['default_selects']['#disabled'] = TRUE;
     $form['default_menus']['#disabled'] = TRUE;
@@ -91,165 +81,138 @@ function menu_block_placement_field_settings_form($field, $instance) {
  * Implements hook_field_widget_form().
  */
 function menu_block_placement_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  //sets regions and menu variables
   $regions = variable_get('menu_block_placement_regions');
-  if (isset($field["settings"]["default_menus"])) {
-    $default_menus = $field["settings"]["default_menus"];
-    foreach ($default_menus as $key => $value) {
-      if ($value === 0) {
-        unset($default_menus[$key]);
-      }
-    }
+  $options = _menu_block_placement_menu_items($field);
 
-    $options = array();
-    $menu_items = menu_parent_options($default_menus, array("mlid" => 0));
-    foreach ($menu_items as $key => $value) {
-      $exploded_key = explode(":", $key);
-      $menu_machine_name = ucwords(str_replace("-", " ", array_shift($exploded_key)));
-      $menu_id = array_pop($exploded_key);
-      if ($menu_id != 0) {
-        $options[$menu_machine_name][$menu_id] = str_replace(array(
-          "<",
-          ">"
-        ), "", $value);
-      }
-    }
-  }
+  //menu mlid select list
+  $element['mlid'] = array(
+    '#type' => 'select',
+    '#title' => t('Menu Item'),
+    '#options' => $options,
+    '#multiple' => $field['cardinality'] == '-1' ? TRUE : FALSE,
+    '#required' => $instance['required'],
+    '#default_value' => isset($items[0]['mlid']) ? $items[0]['mlid'] : (isset($instance['default_value'][0]['mlid']) ? $instance['default_value'][0]['mlid'] : ''),
+  );
 
 
-  if (isset($form['nid']['#value']) && isset($items[0]['mlid'])) {
-    $field_name = $instance['field_name'];
-    $items[0]['mlid'] = array();
-    $data = db_select('field_data_' . $field_name, 'f')
-      ->fields('f', array($field_name . '_mlid'))
-      ->condition('entity_id', $form['nid']['#value'])
-      ->condition('revision_id', $form['vid']['#value'])
-      ->execute();
-    $field_name .= '_mlid';
-    foreach ($data as $row) {
-      $items[0]['mlid'][] = $row->$field_name;
-    }
-  }
-
-
-  if (isset($field['settings']['default_selects']) && $field['settings']['default_selects']['menu']) {
-    $element['mlid'] = array(
-      '#type' => 'select',
-      '#title' => t('Menu Item'),
-      '#options' => $options,
-      '#multiple' => TRUE,
-      '#required' => $instance['required'],
-      '#default_value' => isset($items[0]['mlid']) ? $items[0]['mlid'] : '',
-    );
-  }
-
-  if (isset($field['settings']['default_selects']) && $field['settings']['default_selects']['region']) {
+  if ($field['settings']['default_selects']['region']) {
     $element['region'] = array(
       '#type' => 'select',
       '#title' => t('Region'),
       '#options' => $regions,
       '#required' => $instance['required'],
       '#empty_option' => t('- None -'),
-      '#default_value' => isset($items[0]['region']) ? $items[0]['region'] : array(0 => 0),
+      '#default_value' => isset($items[0]['region']) ? $items[0]['region'] : (isset($instance['default_value'][0]['region']) ? $instance['default_value'][0]['region'] : ''),
     );
   }
-  if (isset($field['settings']['default_selects']) && $field['settings']['default_selects']['individ']) {
+  if ($field['settings']['default_selects']['individ']) {
     $element['individual_pages'] = array(
       '#type' => 'checkbox',
       '#title' => t('Display only on the selected pages'),
-      '#default_value' => isset($items[0]['individual_pages']) ? $items[0]['individual_pages'] : 0,
+      '#default_value' => isset($items[0]['individual_pages']) ? $items[0]['individual_pages'] : (isset($instance['default_value'][0]['individual_pages']) ? $instance['default_value'][0]['individual_pages'] : 0),
     );
   }
   return $element;
 }
 
 /**
- *  Implements hook_node_insert().
+ * Implement hook_field_presave().
  */
-function menu_block_placement_node_insert($node) {
-  menu_block_placement_node_update($node);
-}
-
-/**
- *  Implements hook_node_update().
- */
-function menu_block_placement_node_update($node) {
-  foreach ($node as $key => $value) {
-    if (substr($key, 0, 5) == 'field') {
-      if (isset($value['und']) && isset($value['und'][0]) && isset($value['und'][0]['mlid'])) {
-        db_delete('field_data_' . $key)
-          ->condition('entity_id', $node->nid)
-          ->condition('revision_id', $node->vid)
-          ->execute();
-
-        db_delete('field_revision_' . $key)
-          ->condition('entity_id', $node->nid)
-          ->condition('revision_id', $node->vid)
-          ->execute();
-
-
-        $i = 0;
-        foreach ($value['und'] as $data) {
-          $new_data = array(
-            'entity_type' => 'node',
-            'bundle' => $node->type,
-            'entity_id' => $node->nid,
-            'revision_id' => $node->vid,
-            'delta' => $i,
-            'language' => 'und',
-            $key . '_mlid' => $data['mlid'],
-          );
-          if(isset($data['region'])){
-            $new_data[$key . '_region'] = $data['region'];
-          }
-          if(isset($data['individual_pages'])){
-            $new_data[$key . '_individual_pages'] = $data['individual_pages'];
-          }
-
-          $i++;
-
-          db_insert('field_data_' . $key)
-            ->fields($new_data)
-            ->execute();
-
-          db_insert('field_revision_' . $key)
-            ->fields($new_data)
-            ->execute();
-        }
-      }
-    }
-  }
-}
-
-/**
- *  Implements hook_node_delete().
- */
-function menu_block_placement_node_delete($node) {
-  foreach ($node as $key => $value) {
-    if (substr($key, 0, 5) == 'field') {
-      if (isset($value['und']) && isset($value['und'][0]) && isset($value['und'][0]['mlid'])) {
-        db_delete('field_data_' . $key)
-          ->condition('entity_id', $node->nid)
-          ->execute();
-
-        db_delete('field_revision_' . $key)
-          ->condition('entity_id', $node->nid)
-          ->execute();
-      }
-    }
-  }
-}
-
 function menu_block_placement_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items) {
   $data = array();
-  if(isset($items[0]['mlid'])) {
+  dpm($items);
+  if (is_array($items[0]['mlid'])) {
     foreach ($items[0]['mlid'] as $mlid) {
       $data[] = array(
         'mlid' => $mlid,
-        'region' => isset($items[0]['region']) ? $items[0]['region'] : null,
-        'individual_pages' => isset($items[0]['individual_pages']) ? $items[0]['individual_pages'] : null,
+        'region' => isset($items[0]['region']) ? $items[0]['region'] : NULL,
+        'individual_pages' => isset($items[0]['individual_pages']) ? $items[0]['individual_pages'] : NULL,
       );
     }
     $items = $data;
+  }
+  dpm($items);
+}
+
+/**
+ *  Implements hook_field_formatter_info().
+ */
+function menu_block_placement_field_formatter_info() {
+  return array(
+    'menu_block_placement_formatter' => array(
+      'label' => t('Menu Block Placement'),
+      'field types' => array('menu_block_placement_reference'),
+    ),
+  );
+}
+
+/**
+ *  Implements hook_field_formatter_view().
+ */
+function menu_block_placement_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  /*  $menu_array = _menu_block_placement_menu_items($field);
+    $regions = variable_get('menu_block_placement_regions');
+    $output = array();
+    foreach ($items as $item) {
+      foreach ($menu_array as $menu) {
+        if (isset($menu[$item['mlid']])) {
+          $output['mlid'][$item['mlid']] = trim($menu[$item['mlid']], "-\t\n\r\0\x0B");
+        }
+      }
+    }
+    $output['region'] = $regions[$items[0]['region']];
+    $output['individual_pages'] = $items[0]['individual_pages'] ? 'True' : 'False';*/
+
+  $element = array(
+    array(
+      '#markup' => 'stuff',
+    ),
+  );
+
+  return $element;
+}
+
+/**
+ *  Implements hook_form_alter().
+ */
+function menu_block_placement_form_alter(&$form, &$form_state, $form_id) {
+  $field_names = array();
+  //checks and sets the field name to be used to alter the form for that particular field
+  if (isset($form_state['node'])) {
+    foreach ($form_state['field'] as $field) {
+      if ($field[$form['language']['#value']]['field']['type'] == 'menu_block_placement_reference') {
+        $field_names[] = $field[$form['language']['#value']]['field']['field_name'];
+      }
+    }
+  }
+
+  foreach ($field_names as $field_name) {
+    $form[$field_name][$form['language']['#value']]['#cardinality'] = '1';
+    $temp_field = $form[$field_name][$form['language']['#value']][0];
+    unset($form[$field_name][$form['language']['#value']]['add_more']);
+    unset($temp_field['_weight']);
+
+    $items = db_select('field_data_' . $field_name, 'f')
+      ->fields('f', array($field_name . '_mlid'))
+      ->condition('entity_id', $form['nid'])
+      ->condition('revision_id', $form['vid'])
+      ->execute();
+    $default_mlid = array();
+
+    $db_field_name = $field_name . '_mlid';
+    foreach ($items as $item) {
+      $default_mlid[] = $item->$db_field_name;
+    }
+
+    $temp_field['mlid']['#default_value'] = $default_mlid;
+
+    foreach ($form[$field_name][$form['language']['#value']] as $key => $value) {
+      if (isset($value['mlid'])) {
+        unset($form[$field_name][$form['language']['#value']][$key]);
+      }
+    }
+    $form[$field_name][$form['language']['#value']][0] = $temp_field;
   }
 }
 
@@ -310,4 +273,31 @@ function _menu_block_placement_regions() {
 
   //sets the variable for use in the field.
   variable_set('menu_block_placement_regions', $available_regions);
+}
+
+function _menu_block_placement_menu_items($field) {
+  $options = array();
+  if (isset($field["settings"]["default_menus"])) {
+    $default_menus = $field["settings"]["default_menus"];
+    foreach ($default_menus as $key => $value) {
+      if ($value === 0) {
+        unset($default_menus[$key]);
+      }
+    }
+
+    $options = array();
+    $menu_items = menu_parent_options($default_menus, array("mlid" => 0));
+    foreach ($menu_items as $key => $value) {
+      $exploded_key = explode(":", $key);
+      $menu_machine_name = ucwords(str_replace("-", " ", array_shift($exploded_key)));
+      $menu_id = array_pop($exploded_key);
+      if ($menu_id != 0) {
+        $options[$menu_machine_name][$menu_id] = str_replace(array(
+          "<",
+          ">"
+        ), "", $value);
+      }
+    }
+  }
+  return $options;
 }

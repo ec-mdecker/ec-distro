@@ -9,7 +9,6 @@
  */
 function menu_block_placement_field_schema($field) {
   $schema = array();
-  if (isset($field['settings']['default_selects']['menu']) && $field['settings']['default_selects']['menu']) {
     $schema['columns']['mlid'] = array(
       'description' => 'The menu link ID (mlid) of the selected menu item.',
       'type' => 'varchar',
@@ -17,7 +16,7 @@ function menu_block_placement_field_schema($field) {
       'not null' => FALSE,
       'default' => '',
     );
-  }
+
   if (isset($field['settings']['default_selects']['region']) && $field['settings']['default_selects']['region']) {
     $schema['columns']['region'] = array(
       'description' => 'The desired region for the item',

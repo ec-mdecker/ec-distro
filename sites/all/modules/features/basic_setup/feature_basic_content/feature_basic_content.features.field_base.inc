@@ -58,7 +58,7 @@ function feature_basic_content_field_default_field_bases() {
   // Exported field_base: 'field_basic_block_settings'
   $field_bases['field_basic_block_settings'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_basic_block_settings',
@@ -68,8 +68,8 @@ function feature_basic_content_field_default_field_bases() {
     'module' => 'menu_block_placement',
     'settings' => array(
       'default_menus' => array(
+        0 => 0,
         'devel' => 0,
-        'features' => 0,
         'main-menu' => 'main-menu',
         'management' => 0,
         'navigation' => 0,
@@ -77,7 +77,6 @@ function feature_basic_content_field_default_field_bases() {
       ),
       'default_selects' => array(
         'individ' => 'individ',
-        'menu' => 'menu',
         'region' => 'region',
       ),
     ),
@@ -88,7 +87,7 @@ function feature_basic_content_field_default_field_bases() {
   // Exported field_base: 'field_basic_slideshow_assignment'
   $field_bases['field_basic_slideshow_assignment'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_basic_slideshow_assignment',
@@ -100,8 +99,6 @@ function feature_basic_content_field_default_field_bases() {
       'allowed_values' => array(),
       'allowed_values_function' => '',
       'default_menus' => array(
-        'devel' => 0,
-        'features' => 0,
         'main-menu' => 'main-menu',
         'management' => 0,
         'navigation' => 0,
@@ -109,7 +106,6 @@ function feature_basic_content_field_default_field_bases() {
       ),
       'default_selects' => array(
         'individ' => 0,
-        'menu' => 'menu',
         'region' => 0,
       ),
     ),

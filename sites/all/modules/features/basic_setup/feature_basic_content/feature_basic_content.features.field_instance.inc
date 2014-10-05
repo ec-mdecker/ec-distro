@@ -238,7 +238,8 @@ function feature_basic_content_field_default_field_instances() {
     'default_value' => array(
       0 => array(
         'mlid' => array(),
-        'region' => 'footer',
+        'region' => '',
+        'individual_pages' => 0,
       ),
     ),
     'deleted' => 0,
