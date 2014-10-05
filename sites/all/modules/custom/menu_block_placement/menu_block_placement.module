@@ -141,7 +141,19 @@ function menu_block_placement_field_presave($entity_type, $entity, $field, $inst
 function menu_block_placement_field_formatter_info() {
   return array(
     'menu_block_placement_formatter' => array(
-      'label' => t('Menu Block Placement'),
+      'label' => t('All Data'),
+      'field types' => array('menu_block_placement_reference'),
+    ),
+    'menu_block_placement_mlid' => array(
+      'label' => t('Menu Items'),
+      'field types' => array('menu_block_placement_reference'),
+    ),
+    'menu_block_placement_region' => array(
+      'label' => t('Region'),
+      'field types' => array('menu_block_placement_reference'),
+    ),
+    'menu_block_placement_ind_pages' => array(
+      'label' => t('Individual Pages'),
       'field types' => array('menu_block_placement_reference'),
     ),
   );
@@ -150,34 +162,70 @@ function menu_block_placement_field_formatter_info() {
 /**
  *  Implements hook_field_formatter_view().
  */
-function menu_block_placement_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+function menu_block_placement_field_formatter_view($entity_type, $entity, &$field, $instance, $langcode, $items, $display) {
   $menu_array = _menu_block_placement_menu_items($field);
   $regions = variable_get('menu_block_placement_regions');
   $output = array();
+  $element = array();
 
-  //creates and structures an array for easier manipulation
-  foreach ($items as $item) {
-    foreach ($menu_array as $menu) {
-      if (isset($menu[$item['mlid']])) {
-        $output['mlid'][$item['mlid']] = trim($menu[$item['mlid']], "-\t\n\r\0\x0B");
+  switch ($display['type']) {
+    case 'menu_block_placement_formatter':
+      //creates and structures an array for easier manipulation
+      foreach ($items as $item) {
+        foreach ($menu_array as $menu) {
+          if (isset($menu[$item['mlid']])) {
+            $output['mlid'][$item['mlid']] = trim($menu[$item['mlid']], "-\t\n\r\0\x0B");
+          }
+        }
       }
-    }
+      isset($items[0]['region']) ? $output['region'] = $regions[$items[0]['region']] : '';
+      isset($items[0]['individual_pages']) ? $output['individual_pages'] = ($items[0]['individual_pages'] ? 'True' : 'False') : '';
+
+      //develops the html output of the data in a simple form
+      $html_output = !empty($output['mlid']) ? 'Menu Items: <ul><li>' : '';
+      $html_output .= !empty($output['mlid']) ? implode('</li><li>', $output['mlid']) : '';
+      $html_output .= !empty($output['mlid']) ? '</li></ul>' : '';
+      $html_output .= !empty($output['region']) ? 'Region: ' . $output['region'] . '<br>' : '';
+      $html_output .= !empty($output['individual_pages']) ? 'Show on individual pages: ' . $output['individual_pages'] . '<br>' : '';
+
+      $element = array(
+        array(
+          '#markup' => $html_output,
+        ),
+      );
+
+      break;
+    case 'menu_block_placement_mlid':
+      //creates and structures an array for easier manipulation
+      foreach ($items as $item) {
+        foreach ($menu_array as $menu) {
+          if (isset($menu[$item['mlid']])) {
+            $output[] = trim($menu[$item['mlid']], "-\t\n\r\0\x0B");
+          }
+        }
+      }
+
+      foreach ($output as $delta => $menu) {
+        $element[$delta] = array(
+          '#markup' => $menu,
+        );
+      }
+      break;
+    case 'menu_block_placement_region':
+      $element = array(
+        array(
+          '#markup' => !empty($items[0]['region']) ? $regions[$items[0]['region']] : '',
+        ),
+      );
+      break;
+    case 'menu_block_placement_ind_pages':
+      $element = array(
+        array(
+          '#markup' => !empty($items[0]['individual_pages']) ? ($items[0]['individual_pages'] ? 'True' : 'False') : '',
+        ),
+      );
+      break;
   }
-  isset($items[0]['region']) ? $output['region'] = $regions[$items[0]['region']] : '';
-  isset($items[0]['individual_pages']) ? $output['individual_pages'] = ($items[0]['individual_pages'] ? 'True' : 'False') : '';
-
-  //develops the html output of the data in a simple form
-  $html_output = !empty($output['mlid']) ? 'Menu Items: <ul><li>' : '';
-  $html_output .= !empty($output['mlid']) ? implode('</li><li>', $output['mlid']) : '';
-  $html_output .= !empty($output['mlid']) ? '</li></ul>' : '';
-  $html_output .= !empty($output['region']) ? 'Region: ' . $output['region'] . '<br>' : '';
-  $html_output .= !empty($output['individual_pages']) ? 'Show on individual pages: ' . $output['individual_pages'] . '<br>' : '';
-
-  $element = array(
-    array(
-      '#markup' => $html_output,
-    ),
-  );
 
   return $element;
 }
