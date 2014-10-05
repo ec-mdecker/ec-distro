@@ -21,7 +21,6 @@ function menu_block_placement_field_info() {
           'individ' => 'individ',
         ),
       ),
-
     ),
   );
 }
@@ -39,6 +38,9 @@ function menu_block_placement_field_widget_info() {
 }
 
 /**
+ * The field settings. Allows a user to choose which menus to be included in
+ * the select list, as well as which additional fields to include
+ *
  * Implements hook_field_settings_form().
  */
 function menu_block_placement_field_settings_form($field, $instance) {
@@ -67,11 +69,8 @@ function menu_block_placement_field_settings_form($field, $instance) {
     '#description' => t('Select which menus will be available to the content editor.<br>WARNING: These settings can not be altered after data has been entered.'),
   );
 
-  //if data has been entered, disable the fields
-  if (field_has_data($field['field_name'])) {
-    $form['default_selects']['#disabled'] = TRUE;
-    $form['default_menus']['#disabled'] = TRUE;
-  }
+  //if data has been entered, disable the default selects field
+  $form['default_selects']['#disabled'] = field_has_data($field['field_name']);
 
   return $form;
 }
@@ -94,8 +93,7 @@ function menu_block_placement_field_widget_form(&$form, &$form_state, $field, $i
     '#required' => $instance['required'],
     '#default_value' => isset($items[0]['mlid']) ? $items[0]['mlid'] : (isset($instance['default_value'][0]['mlid']) ? $instance['default_value'][0]['mlid'] : ''),
   );
-
-
+  //regions select list
   if ($field['settings']['default_selects']['region']) {
     $element['region'] = array(
       '#type' => 'select',
@@ -106,6 +104,7 @@ function menu_block_placement_field_widget_form(&$form, &$form_state, $field, $i
       '#default_value' => isset($items[0]['region']) ? $items[0]['region'] : (isset($instance['default_value'][0]['region']) ? $instance['default_value'][0]['region'] : ''),
     );
   }
+  //show on individual pages checkbox
   if ($field['settings']['default_selects']['individ']) {
     $element['individual_pages'] = array(
       '#type' => 'checkbox',
@@ -117,6 +116,9 @@ function menu_block_placement_field_widget_form(&$form, &$form_state, $field, $i
 }
 
 /**
+ * Manipulates a single field's data to simulate multiple entries.
+ * This helps to save each menu item into each row when multiple menu items are chosen
+ *
  * Implement hook_field_presave().
  */
 function menu_block_placement_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items) {
@@ -149,22 +151,31 @@ function menu_block_placement_field_formatter_info() {
  *  Implements hook_field_formatter_view().
  */
 function menu_block_placement_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-  /*  $menu_array = _menu_block_placement_menu_items($field);
-    $regions = variable_get('menu_block_placement_regions');
-    $output = array();
-    foreach ($items as $item) {
-      foreach ($menu_array as $menu) {
-        if (isset($menu[$item['mlid']])) {
-          $output['mlid'][$item['mlid']] = trim($menu[$item['mlid']], "-\t\n\r\0\x0B");
-        }
+  $menu_array = _menu_block_placement_menu_items($field);
+  $regions = variable_get('menu_block_placement_regions');
+  $output = array();
+
+  //creates and structures an array for easier manipulation
+  foreach ($items as $item) {
+    foreach ($menu_array as $menu) {
+      if (isset($menu[$item['mlid']])) {
+        $output['mlid'][$item['mlid']] = trim($menu[$item['mlid']], "-\t\n\r\0\x0B");
       }
     }
-    $output['region'] = $regions[$items[0]['region']];
-    $output['individual_pages'] = $items[0]['individual_pages'] ? 'True' : 'False';*/
+  }
+  isset($items[0]['region']) ? $output['region'] = $regions[$items[0]['region']] : '';
+  isset($items[0]['individual_pages']) ? $output['individual_pages'] = ($items[0]['individual_pages'] ? 'True' : 'False') : '';
+
+  //develops the html output of the data in a simple form
+  $html_output = !empty($output['mlid']) ? 'Menu Items: <ul><li>' : '';
+  $html_output .= !empty($output['mlid']) ? implode('</li><li>', $output['mlid']) : '';
+  $html_output .= !empty($output['mlid']) ? '</li></ul>' : '';
+  $html_output .= !empty($output['region']) ? 'Region: ' . $output['region'] . '<br>' : '';
+  $html_output .= !empty($output['individual_pages']) ? 'Show on individual pages: ' . $output['individual_pages'] . '<br>' : '';
 
   $element = array(
     array(
-      '#markup' => 'stuff',
+      '#markup' => $html_output,
     ),
   );
 
@@ -176,40 +187,52 @@ function menu_block_placement_field_formatter_view($entity_type, $entity, $field
  */
 function menu_block_placement_form_alter(&$form, &$form_state, $form_id) {
   $field_names = array();
+
   //checks and sets the field name to be used to alter the form for that particular field
   if (isset($form_state['node'])) {
     foreach ($form_state['field'] as $field) {
-      if ($field[$form['language']['#value']]['field']['type'] == 'menu_block_placement_reference') {
+      if (isset($field[$form['language']['#value']]) && $field[$form['language']['#value']]['field']['type'] == 'menu_block_placement_reference') {
+        //sets the field names into an array for multiple fields in the same form
         $field_names[] = $field[$form['language']['#value']]['field']['field_name'];
       }
     }
   }
 
+  //loops through all the valid fields in he form
   foreach ($field_names as $field_name) {
+    //changes the form to only display one field, not multiple fields
     $form[$field_name][$form['language']['#value']]['#cardinality'] = '1';
+    //duplicates the basic field settings to be re-injected later
     $temp_field = $form[$field_name][$form['language']['#value']][0];
+    //unsets values to hide the add more and weight attributes
     unset($form[$field_name][$form['language']['#value']]['add_more']);
     unset($temp_field['_weight']);
 
+    //queries the db to find all the mlid's for the current node
     $items = db_select('field_data_' . $field_name, 'f')
       ->fields('f', array($field_name . '_mlid'))
       ->condition('entity_id', $form['nid'])
       ->condition('revision_id', $form['vid'])
       ->execute();
-    $default_mlid = array();
 
+    //creates an array from the mlid's for the current node
+    $default_mlid = array();
     $db_field_name = $field_name . '_mlid';
     foreach ($items as $item) {
       $default_mlid[] = $item->$db_field_name;
     }
 
+    //sets the default mlid values
     $temp_field['mlid']['#default_value'] = $default_mlid;
 
+    //unsets the original data that was pulled in
     foreach ($form[$field_name][$form['language']['#value']] as $key => $value) {
       if (isset($value['mlid'])) {
         unset($form[$field_name][$form['language']['#value']][$key]);
       }
     }
+
+    //sets the data from the manipulated data.
     $form[$field_name][$form['language']['#value']][0] = $temp_field;
   }
 }
