@@ -121,7 +121,6 @@ function menu_block_placement_field_widget_form(&$form, &$form_state, $field, $i
  */
 function menu_block_placement_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items) {
   $data = array();
-  dpm($items);
   if (is_array($items[0]['mlid'])) {
     foreach ($items[0]['mlid'] as $mlid) {
       $data[] = array(
@@ -132,7 +131,6 @@ function menu_block_placement_field_presave($entity_type, $entity, $field, $inst
     }
     $items = $data;
   }
-  dpm($items);
 }
 
 /**
