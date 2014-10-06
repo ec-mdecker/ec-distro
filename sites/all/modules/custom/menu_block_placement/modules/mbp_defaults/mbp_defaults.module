@@ -123,6 +123,7 @@ function mbp_defaults_block_info_alter(&$blocks, $theme, $code_blocks) {
           $block['region'] = $region;
           $block['status'] = '1';
           $block['pages'] = 'node/*/edit';
+          $block['weight'] = 10;
         }
       }
     }
