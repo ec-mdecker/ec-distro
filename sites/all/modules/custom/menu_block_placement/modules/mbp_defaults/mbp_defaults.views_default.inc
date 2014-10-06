@@ -7,9 +7,9 @@ function mbp_defaults_views_default_views() {
   $views = array();
 
 
-  foreach ($fields as $field_name) {
+  foreach ($fields as $key => $field_name) {
     $view = new view();
-    $view->name = 'mbp_' . substr($field_name, 6);
+    $view->name = 'mbp_' . $key;
     $view->description = '';
     $view->tag = 'mbp_defaults';
     $view->base_table = 'node';
@@ -124,7 +124,7 @@ function mbp_defaults_views_default_views() {
     $handler->display->display_options['fields']['draggableviews']['element_label_colon'] = FALSE;
     $handler->display->display_options['fields']['draggableviews']['element_default_classes'] = FALSE;
     $handler->display->display_options['fields']['draggableviews']['hide_alter_empty'] = FALSE;
-    $handler->display->display_options['fields']['draggableviews']['draggableviews']['ajax'] = 0;
+    $handler->display->display_options['fields']['draggableviews']['draggableviews']['ajax'] = 1;
     /* Field: Content: Title */
     $handler->display->display_options['fields']['title']['id'] = 'title';
     $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -132,7 +132,6 @@ function mbp_defaults_views_default_views() {
     $handler->display->display_options['fields']['title']['label'] = '';
     $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
     $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
-
 
     $views[] = $view;
   }

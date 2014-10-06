@@ -63,7 +63,7 @@ function mbp_defaults_block_info() {
   foreach ($fields as $fid => $field) {
     foreach ($regions as $key => $label) {
       $blocks['mbp-' . $fid . '-' . $key] = array(
-        'info' => t('QT-' . substr($field, 6) . '-' . $label),
+        'info' => t('MBP-' . substr($field, 6) . '-' . $label),
         'cache' => DRUPAL_NO_CACHE,
       );
     }
@@ -72,15 +72,28 @@ function mbp_defaults_block_info() {
 }
 
 /**
+ *  Implements hook_block_info_alter().
+ */
+function mbp_defaults_block_info_alter(&$blocks, $theme, $code_blocks) {
+  if(isset($blocks['mbp_defaults']) && !empty($blocks['mbp_defaults'])) {
+    foreach ($blocks['mbp_defaults'] as &$block) {
+      $block['region'] = substr($block['delta'], strpos($block['delta'], '-', 5) + 1);
+      $block['status'] = '1';
+    }
+  }
+}
+
+/**
  *  Implements hook_block_view().
  */
 function mbp_defaults_block_view($delta = '') {
   $fields = variable_get('mbp_defaults');
-  $field_name = $fields[substr($delta, 4, strpos($delta, '-', 4) - 4)];
+  $field_id = substr($delta, 4, strpos($delta, '-', 4) - 4);
+  $field_name = $fields[$field_id];
   $region = substr($delta, strpos($delta, '-', 5) + 1);
   $block = array(
     'subject' => t(''),
-    'content' => mbp_defaults_build_quicktabs($field_name, $region),
+    'content' => mbp_defaults_build_quicktabs($field_id, $field_name, $region),
   );
   return $block;
 }
@@ -88,9 +101,9 @@ function mbp_defaults_block_view($delta = '') {
 /*
  * Helper Function that contains all the quicktabs settings information
  */
-function mbp_defaults_build_quicktabs($field_name, $region) {
+function mbp_defaults_build_quicktabs($field_id, $field_name, $region) {
   $settings = array(
-    'style' => 'zen',
+    'style' => 'Zen',
     'renderer' => 'quicktabs',
     'hide_empty_tabs' => TRUE,
     'default_tab' => 0,
@@ -99,7 +112,7 @@ function mbp_defaults_build_quicktabs($field_name, $region) {
   );
   $tabs = array(
     0 => array(
-      'vid' => 'mbp_' . substr($field_name, 6),
+      'vid' => 'mbp_' . $field_id,
       'display' => 'block',
       'args' => $region,
       'title' => 'Display',
@@ -107,7 +120,7 @@ function mbp_defaults_build_quicktabs($field_name, $region) {
       'type' => 'view',
     ),
     1 => array(
-      'vid' => 'mbp_' . substr($field_name, 6),
+      'vid' => 'mbp_' . $field_id,
       'display' => 'block_1',
       'args' => $region,
       'title' => 'Sort',
@@ -115,7 +128,7 @@ function mbp_defaults_build_quicktabs($field_name, $region) {
       'type' => 'view',
     ),
   );
-  $qt_name = substr($field_name, 6) . '_' . $region;
+  $qt_name = $field_id . '-' . $region;
 
   return quicktabs_build_quicktabs($qt_name, $settings, $tabs);
 }

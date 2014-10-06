@@ -4,5 +4,4 @@ description = Automatically creates the proper views, quicktabs, and context upo
 
 dependencies[] = menu_block_placement
 dependencies[] = quicktabs
-dependencies[] = context
 dependencies[] = draggableviews
