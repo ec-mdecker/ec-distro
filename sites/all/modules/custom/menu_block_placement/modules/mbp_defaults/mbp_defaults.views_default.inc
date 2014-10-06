@@ -14,7 +14,7 @@ function mbp_defaults_views_default_views() {
     $individual = $field_settings['settings']['default_selects']['individ'];
     $tags = 'mbp_defaults';
     $tags .= $region ? ', mbp_regions' : '';
-    $tags .= $individual ?  ', mbp_individual' : '';
+    $tags .= $individual ? ', mbp_individual' : '';
 
     $view = new view();
     $view->name = 'mbp_' . $key;
@@ -28,6 +28,7 @@ function mbp_defaults_views_default_views() {
 
     /* Display: Master */
     $handler = $view->new_display('default', 'Master', 'default');
+    $handler->display->display_options['use_ajax'] = TRUE;
     $handler->display->display_options['use_more_always'] = FALSE;
     $handler->display->display_options['access']['type'] = 'perm';
     $handler->display->display_options['cache']['type'] = 'none';
@@ -45,14 +46,8 @@ function mbp_defaults_views_default_views() {
     $handler->display->display_options['fields']['title']['label'] = '';
     $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
     $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
-    /* Sort criterion: Draggableviews: Weight */
-    $handler->display->display_options['sorts']['weight']['id'] = 'weight';
-    $handler->display->display_options['sorts']['weight']['table'] = 'draggableviews_structure';
-    $handler->display->display_options['sorts']['weight']['field'] = 'weight';
-    $handler->display->display_options['sorts']['weight']['draggableviews_setting_view'] = 'mbp_' . substr($field_name, 6) . ':block_1';
-    $handler->display->display_options['sorts']['weight']['draggableviews_setting_new_items_bottom_list'] = 1;
     /* Contextual filter: Content: Block Settings (field_block_settings:region) */
-    if($region) {
+    if ($region) {
       $handler->display->display_options['arguments'][$field_name . '_region']['id'] = $field_name . '_region';
       $handler->display->display_options['arguments'][$field_name . '_region']['table'] = 'field_data_' . $field_name;
       $handler->display->display_options['arguments'][$field_name . '_region']['field'] = $field_name . '_region';
@@ -75,7 +70,7 @@ function mbp_defaults_views_default_views() {
     $handler->display->display_options['arguments'][$field_name . '_mlid']['summary_options']['items_per_page'] = '25';
     $handler->display->display_options['arguments'][$field_name . '_mlid']['limit'] = '0';
     /* Contextual filter:  Content: Block Settings:mlid */
-    if($individual) {
+    if ($individual) {
       $handler->display->display_options['arguments'][$field_name . '_mlid_1']['id'] = $field_name . '_mlid_1';
       $handler->display->display_options['arguments'][$field_name . '_mlid_1']['table'] = 'field_data_' . $field_name;
       $handler->display->display_options['arguments'][$field_name . '_mlid_1']['field'] = $field_name . '_mlid';
@@ -95,7 +90,7 @@ function mbp_defaults_views_default_views() {
     $handler->display->display_options['filters']['status']['value'] = 1;
     $handler->display->display_options['filters']['status']['group'] = 1;
     $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
-    if($individual) {
+    if ($individual) {
       /* Filter criterion: Content: Block Settings (field_block_settings:individual_pages) */
       $handler->display->display_options['filters'][$field_name . '_individual_pages']['id'] = $field_name . '_individual_pages';
       $handler->display->display_options['filters'][$field_name . '_individual_pages']['table'] = 'field_data_' . $field_name;
@@ -104,6 +99,13 @@ function mbp_defaults_views_default_views() {
     }
     /* Display: Display */
     $handler = $view->new_display('block', 'Display', 'block');
+    $handler->display->display_options['defaults']['sorts'] = FALSE;
+    /* Sort criterion: Draggableviews: Weight */
+    $handler->display->display_options['sorts']['weight']['id'] = 'weight';
+    $handler->display->display_options['sorts']['weight']['table'] = 'draggableviews_structure';
+    $handler->display->display_options['sorts']['weight']['field'] = 'weight';
+    $handler->display->display_options['sorts']['weight']['draggableviews_setting_view'] = 'mbp_' .$key . ':block_1';
+    $handler->display->display_options['sorts']['weight']['draggableviews_setting_new_items_bottom_list'] = 1;
 
     /* Display: Sort */
     $handler = $view->new_display('block', 'Sort', 'block_1');
@@ -113,13 +115,25 @@ function mbp_defaults_views_default_views() {
     $handler->display->display_options['defaults']['style_plugin'] = FALSE;
     $handler->display->display_options['style_plugin'] = 'table';
     $handler->display->display_options['style_options']['columns'] = array(
+      'draggableviews' => 'draggableviews',
       'title' => 'title',
+      'edit_node' => 'title',
     );
     $handler->display->display_options['style_options']['default'] = '-1';
     $handler->display->display_options['style_options']['info'] = array(
+      'draggableviews' => array(
+        'align' => '',
+        'separator' => '',
+        'empty_column' => 0,
+      ),
       'title' => array(
         'sortable' => 0,
         'default_sort_order' => 'asc',
+        'align' => '',
+        'separator' => '',
+        'empty_column' => 0,
+      ),
+      'edit_node' => array(
         'align' => '',
         'separator' => '',
         'empty_column' => 0,
@@ -137,7 +151,8 @@ function mbp_defaults_views_default_views() {
     $handler->display->display_options['fields']['draggableviews']['element_label_colon'] = FALSE;
     $handler->display->display_options['fields']['draggableviews']['element_default_classes'] = FALSE;
     $handler->display->display_options['fields']['draggableviews']['hide_alter_empty'] = FALSE;
-    $handler->display->display_options['fields']['draggableviews']['draggableviews']['ajax'] = 1;
+    $handler->display->display_options['fields']['draggableviews']['draggableviews']['save_button_label'] = 'Save Order';
+    $handler->display->display_options['fields']['draggableviews']['draggableviews']['ajax'] = 0;
     /* Field: Content: Title */
     $handler->display->display_options['fields']['title']['id'] = 'title';
     $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -145,6 +160,22 @@ function mbp_defaults_views_default_views() {
     $handler->display->display_options['fields']['title']['label'] = '';
     $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
     $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
+    /* Field Content: Edit link */
+    $handler->display->display_options['fields']['edit_node']['id'] = 'edit_node';
+    $handler->display->display_options['fields']['edit_node']['table'] = 'views_entity_node';
+    $handler->display->display_options['fields']['edit_node']['field'] = 'edit_node';
+    $handler->display->display_options['fields']['edit_node']['label'] = '';
+    $handler->display->display_options['fields']['edit_node']['alter']['alter_text'] = TRUE;
+    $handler->display->display_options['fields']['edit_node']['alter']['text'] = '<br>[edit_node]';
+    $handler->display->display_options['fields']['edit_node']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['edit_node']['text'] = 'Edit';
+    $handler->display->display_options['defaults']['sorts'] = FALSE;
+    /* Sort criterion: Draggableviews: Weight */
+    $handler->display->display_options['sorts']['weight']['id'] = 'weight';
+    $handler->display->display_options['sorts']['weight']['table'] = 'draggableviews_structure';
+    $handler->display->display_options['sorts']['weight']['field'] = 'weight';
+    $handler->display->display_options['sorts']['weight']['draggableviews_setting_view'] = 'self';
+    $handler->display->display_options['sorts']['weight']['draggableviews_setting_new_items_bottom_list'] = 1;
 
     $views[] = $view;
   }

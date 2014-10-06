@@ -102,9 +102,13 @@ function mbp_defaults_block_info_alter(&$blocks, $theme, $code_blocks) {
   if (isset($blocks['mbp_defaults']) && !empty($blocks['mbp_defaults'])) {
     foreach ($blocks['mbp_defaults'] as &$block) {
       if (strpos($block['delta'], '-', 5)) {
-        $region = substr($block['delta'], strpos($block['delta'], '-', 5) + 1);
-        $block['region'] = $region;
-        $block['status'] = '1';
+        if($GLOBALS['theme'] == $block['theme']){
+          dpm($block);
+          $region = substr($block['delta'], strpos($block['delta'], '-', 5) + 1);
+          $block['region'] = $region;
+          $block['status'] = '1';
+          $block['pages'] = 'node/*/edit';
+        }
       }
     }
   }
@@ -154,7 +158,7 @@ function mbp_defaults_build_quicktabs($field_id, $field_name, $region) {
       'vid' => 'mbp_' . $field_id,
       'display' => 'block_1',
       'args' => $field_settings['settings']['default_selects']['region'] ? $region : '',
-      'title' => 'Sort',
+      'title' => 'Sort/Edit',
       'weight' => '-99',
       'type' => 'view',
     ),
