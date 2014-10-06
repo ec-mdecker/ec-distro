@@ -40,7 +40,7 @@ function mbp_defaults_views_api() {
  */
 function mbp_defaults_views_query_alter(&$view, &$query) {
   $tags = explode(', ', $view->tag);
-  if (in_array('mbp_defaults', $tags)) {
+  if (in_array('mbp_defaults', $tags) && $view->type == 'Default') {
     if (in_array('mbp_regions', $tags) && in_array('mbp_individual', $tags)) {
       if (isset($query->where[1]) && isset($query->where[0]) && isset($query->where[0]['conditions'][0]) && isset($query->where[0]['conditions'][1]) && isset($query->where[0]['conditions'][2])) {
         $query->group_operator = 'OR';
@@ -60,8 +60,6 @@ function mbp_defaults_views_query_alter(&$view, &$query) {
       $query->where[1]['conditions'][] = $query->where[0]['conditions'][0];
       $query->where[2]['conditions'][] = $query->where[0]['conditions'][1];
       unset($query->where[0]);
-    }
-    elseif (in_array('mbp_regions', $tags)) {
     }
   }
 }
@@ -101,7 +99,7 @@ function mbp_defaults_block_info_alter(&$blocks, $theme, $code_blocks) {
   if (isset($blocks['mbp_defaults']) && !empty($blocks['mbp_defaults'])) {
     foreach ($blocks['mbp_defaults'] as &$block) {
       if (strpos($block['delta'], '-', 5)) {
-        if(variable_get('theme_default', null) == $block['theme']){
+        if (variable_get('theme_default', NULL) == $block['theme']) {
           $region = substr($block['delta'], strpos($block['delta'], '-', 5) + 1);
           $block['region'] = $region;
           $block['status'] = '1';
