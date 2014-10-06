@@ -226,8 +226,9 @@ function menu_block_placement_field_formatter_view($entity_type, $entity, &$fiel
       );
       break;
   }
-
-  return $element;
+  if(strlen($element[0]['#markup']) != 0){
+    return $element;
+  }
 }
 
 /**

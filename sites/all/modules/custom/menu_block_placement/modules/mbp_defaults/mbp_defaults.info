@@ -1,0 +1,8 @@
+name = Menu Block Placement Defaults
+core = 7.x
+description = Automatically creates the proper views, quicktabs, and context upon field creation
+
+dependencies[] = menu_block_placement
+dependencies[] = quicktabs
+dependencies[] = context
+dependencies[] = draggableviews

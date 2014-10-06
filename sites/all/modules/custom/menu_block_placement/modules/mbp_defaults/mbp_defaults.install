@@ -1,0 +1,13 @@
+<?php
+
+function mbp_defaults_install(){
+  $fields = field_info_fields();
+  $views = array();
+  foreach($fields as $field){
+    if($field['type'] == 'menu_block_placement_reference'){
+      $views[] = $field['field_name'];
+    }
+  }
+
+  variable_set('mbp_defaults', $views);
+}

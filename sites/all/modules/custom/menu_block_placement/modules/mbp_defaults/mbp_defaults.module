@@ -1,0 +1,121 @@
+<?php
+
+/**
+ *  Implements hook_field_create_field().
+ */
+function mbp_defaults_field_create_field($field) {
+  if ($field['type'] == 'menu_block_placement_reference') {
+    $field_name = $field['field_name'];
+
+    if (variable_get('mbp_defaults')) {
+      $views = variable_get('mbp_defaults');
+      $views[$field['id']] = $field_name;
+      variable_set('mbp_defaults', $views);
+    }
+    else {
+      variable_set('mbp_defaults', array($field['id'] => $field_name));
+    }
+  }
+}
+
+/**
+ *  Implements hook_field_delete_field().
+ */
+function mbp_defaults_field_delete_field($field) {
+  if ($field['type'] == 'menu_block_placement_reference') {
+    $views = variable_get('mbp_defaults');
+    unset($views[$field['id']]);
+    variable_set('mbp_defaults', $views);
+  }
+}
+
+function mbp_defaults_views_api() {
+  return array(
+    'api' => 3,
+  );
+}
+
+/**
+ *  Implements hook_views_query_alter().
+ */
+function mbp_defaults_views_query_alter(&$view, &$query) {
+  if ($view->tag == 'mbp_defaults') {
+    if (isset($query->where[1]) && isset($query->where[0]) && isset($query->where[0]['conditions'][0]) && isset($query->where[0]['conditions'][1]) && isset($query->where[0]['conditions'][2])) {
+      $query->group_operator = 'OR';
+      $query->where[] = $query->where[1];
+      $query->where[2]['conditions'][1]['value'] = '0';
+      $query->where[1]['conditions'][] = $query->where[0]['conditions'][0];
+      $query->where[2]['conditions'][] = $query->where[0]['conditions'][0];
+      $query->where[1]['conditions'][] = $query->where[0]['conditions'][1];
+      $query->where[2]['conditions'][] = $query->where[0]['conditions'][2];
+      unset($query->where[0]);
+    }
+  }
+}
+
+/**
+ *  Implements hook_block_info().
+ */
+function mbp_defaults_block_info() {
+  $regions = variable_get('menu_block_placement_regions');
+  $fields = variable_get('mbp_defaults');
+  $blocks = array();
+  foreach ($fields as $fid => $field) {
+    foreach ($regions as $key => $label) {
+      $blocks['mbp-' . $fid . '-' . $key] = array(
+        'info' => t('QT-' . substr($field, 6) . '-' . $label),
+        'cache' => DRUPAL_NO_CACHE,
+      );
+    }
+  }
+  return $blocks;
+}
+
+/**
+ *  Implements hook_block_view().
+ */
+function mbp_defaults_block_view($delta = '') {
+  $fields = variable_get('mbp_defaults');
+  $field_name = $fields[substr($delta, 4, strpos($delta, '-', 4) - 4)];
+  $region = substr($delta, strpos($delta, '-', 5) + 1);
+  $block = array(
+    'subject' => t(''),
+    'content' => mbp_defaults_build_quicktabs($field_name, $region),
+  );
+  return $block;
+}
+
+/*
+ * Helper Function that contains all the quicktabs settings information
+ */
+function mbp_defaults_build_quicktabs($field_name, $region) {
+  $settings = array(
+    'style' => 'zen',
+    'renderer' => 'quicktabs',
+    'hide_empty_tabs' => TRUE,
+    'default_tab' => 0,
+    'title' => 'Test Quicktabs',
+    'options' => array(),
+  );
+  $tabs = array(
+    0 => array(
+      'vid' => 'mbp_' . substr($field_name, 6),
+      'display' => 'block',
+      'args' => $region,
+      'title' => 'Display',
+      'weight' => '-100',
+      'type' => 'view',
+    ),
+    1 => array(
+      'vid' => 'mbp_' . substr($field_name, 6),
+      'display' => 'block_1',
+      'args' => $region,
+      'title' => 'Sort',
+      'weight' => '-99',
+      'type' => 'view',
+    ),
+  );
+  $qt_name = substr($field_name, 6) . '_' . $region;
+
+  return quicktabs_build_quicktabs($qt_name, $settings, $tabs);
+}
