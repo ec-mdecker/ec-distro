@@ -6,7 +6,6 @@
 function mbp_defaults_field_create_field($field) {
   if ($field['type'] == 'menu_block_placement_reference') {
     $field_name = $field['field_name'];
-
     if (variable_get('mbp_defaults')) {
       $views = variable_get('mbp_defaults');
 
@@ -102,8 +101,7 @@ function mbp_defaults_block_info_alter(&$blocks, $theme, $code_blocks) {
   if (isset($blocks['mbp_defaults']) && !empty($blocks['mbp_defaults'])) {
     foreach ($blocks['mbp_defaults'] as &$block) {
       if (strpos($block['delta'], '-', 5)) {
-        if($GLOBALS['theme'] == $block['theme']){
-          dpm($block);
+        if(variable_get('theme_default', null) == $block['theme']){
           $region = substr($block['delta'], strpos($block['delta'], '-', 5) + 1);
           $block['region'] = $region;
           $block['status'] = '1';

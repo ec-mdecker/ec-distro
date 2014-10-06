@@ -38,6 +38,16 @@ function menu_block_placement_field_widget_info() {
 }
 
 /**
+ *  Implements hook_field_create_field().
+ */
+function menu_block_placement_field_create_field($field) {
+  if ($field['type'] == 'menu_block_placement_reference') {
+    $field['cardinality'] = '-1';
+    field_update_field($field);
+  }
+}
+
+/**
  * The field settings. Allows a user to choose which menus to be included in
  * the select list, as well as which additional fields to include
  *
@@ -89,7 +99,7 @@ function menu_block_placement_field_widget_form(&$form, &$form_state, $field, $i
     '#type' => 'select',
     '#title' => t('Menu Item'),
     '#options' => $options,
-    '#multiple' => $field['cardinality'] == '-1' ? TRUE : FALSE,
+    '#multiple' => TRUE,
     '#required' => $instance['required'],
     '#default_value' => isset($items[0]['mlid']) ? $items[0]['mlid'] : (isset($instance['default_value'][0]['mlid']) ? $instance['default_value'][0]['mlid'] : ''),
   );
