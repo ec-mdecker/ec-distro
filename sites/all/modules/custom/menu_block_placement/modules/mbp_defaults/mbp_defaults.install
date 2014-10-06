@@ -5,7 +5,7 @@ function mbp_defaults_install(){
   $views = array();
   foreach($fields as $field){
     if($field['type'] == 'menu_block_placement_reference'){
-      $views[] = $field['field_name'];
+      $views[$field['id']] = $field['field_name'];
     }
   }
 
