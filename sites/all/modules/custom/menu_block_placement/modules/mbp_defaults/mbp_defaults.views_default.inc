@@ -8,10 +8,18 @@ function mbp_defaults_views_default_views() {
 
 
   foreach ($fields as $key => $field_name) {
+    $field_settings = field_info_field($field_name);
+
+    $region = $field_settings['settings']['default_selects']['region'];
+    $individual = $field_settings['settings']['default_selects']['individ'];
+    $tags = 'mbp_defaults';
+    $tags .= $region ? ', mbp_regions' : '';
+    $tags .= $individual ?  ', mbp_individual' : '';
+
     $view = new view();
     $view->name = 'mbp_' . $key;
     $view->description = '';
-    $view->tag = 'mbp_defaults';
+    $view->tag = $tags;
     $view->base_table = 'node';
     $view->human_name = 'Menu Block Placement - ' . $field_name;
     $view->core = 7;
@@ -44,15 +52,17 @@ function mbp_defaults_views_default_views() {
     $handler->display->display_options['sorts']['weight']['draggableviews_setting_view'] = 'mbp_' . substr($field_name, 6) . ':block_1';
     $handler->display->display_options['sorts']['weight']['draggableviews_setting_new_items_bottom_list'] = 1;
     /* Contextual filter: Content: Block Settings (field_block_settings:region) */
-    $handler->display->display_options['arguments'][$field_name . '_region']['id'] = $field_name . '_region';
-    $handler->display->display_options['arguments'][$field_name . '_region']['table'] = 'field_data_' . $field_name;
-    $handler->display->display_options['arguments'][$field_name . '_region']['field'] = $field_name . '_region';
-    $handler->display->display_options['arguments'][$field_name . '_region']['default_action'] = 'not found';
-    $handler->display->display_options['arguments'][$field_name . '_region']['default_argument_type'] = 'fixed';
-    $handler->display->display_options['arguments'][$field_name . '_region']['summary']['number_of_records'] = '0';
-    $handler->display->display_options['arguments'][$field_name . '_region']['summary']['format'] = 'default_summary';
-    $handler->display->display_options['arguments'][$field_name . '_region']['summary_options']['items_per_page'] = '25';
-    $handler->display->display_options['arguments'][$field_name . '_region']['limit'] = '0';
+    if($region) {
+      $handler->display->display_options['arguments'][$field_name . '_region']['id'] = $field_name . '_region';
+      $handler->display->display_options['arguments'][$field_name . '_region']['table'] = 'field_data_' . $field_name;
+      $handler->display->display_options['arguments'][$field_name . '_region']['field'] = $field_name . '_region';
+      $handler->display->display_options['arguments'][$field_name . '_region']['default_action'] = 'not found';
+      $handler->display->display_options['arguments'][$field_name . '_region']['default_argument_type'] = 'fixed';
+      $handler->display->display_options['arguments'][$field_name . '_region']['summary']['number_of_records'] = '0';
+      $handler->display->display_options['arguments'][$field_name . '_region']['summary']['format'] = 'default_summary';
+      $handler->display->display_options['arguments'][$field_name . '_region']['summary_options']['items_per_page'] = '25';
+      $handler->display->display_options['arguments'][$field_name . '_region']['limit'] = '0';
+    }
     /* Contextual filter:  Content: Block Settings:mlid (Per Path) */
     $handler->display->display_options['arguments'][$field_name . '_mlid']['id'] = $field_name . '_mlid';
     $handler->display->display_options['arguments'][$field_name . '_mlid']['table'] = 'field_data_' . $field_name;
@@ -65,17 +75,19 @@ function mbp_defaults_views_default_views() {
     $handler->display->display_options['arguments'][$field_name . '_mlid']['summary_options']['items_per_page'] = '25';
     $handler->display->display_options['arguments'][$field_name . '_mlid']['limit'] = '0';
     /* Contextual filter:  Content: Block Settings:mlid */
-    $handler->display->display_options['arguments'][$field_name . '_mlid_1']['id'] = $field_name . '_mlid_1';
-    $handler->display->display_options['arguments'][$field_name . '_mlid_1']['table'] = 'field_data_' . $field_name;
-    $handler->display->display_options['arguments'][$field_name . '_mlid_1']['field'] = $field_name . '_mlid';
-    $handler->display->display_options['arguments'][$field_name . '_mlid_1']['ui_name'] = $field_name . ':mlid';
-    $handler->display->display_options['arguments'][$field_name . '_mlid_1']['default_action'] = 'default';
-    $handler->display->display_options['arguments'][$field_name . '_mlid_1']['default_argument_type'] = 'menu_block_placement_mlid';
-    $handler->display->display_options['arguments'][$field_name . '_mlid_1']['summary']['number_of_records'] = '0';
-    $handler->display->display_options['arguments'][$field_name . '_mlid_1']['summary']['format'] = 'default_summary';
-    $handler->display->display_options['arguments'][$field_name . '_mlid_1']['summary_options']['items_per_page'] = '25';
-    $handler->display->display_options['arguments'][$field_name . '_mlid_1']['limit'] = '0';
-    $handler->display->display_options['arguments'][$field_name . '_mlid_1']['break_phrase'] = TRUE;
+    if($individual) {
+      $handler->display->display_options['arguments'][$field_name . '_mlid_1']['id'] = $field_name . '_mlid_1';
+      $handler->display->display_options['arguments'][$field_name . '_mlid_1']['table'] = 'field_data_' . $field_name;
+      $handler->display->display_options['arguments'][$field_name . '_mlid_1']['field'] = $field_name . '_mlid';
+      $handler->display->display_options['arguments'][$field_name . '_mlid_1']['ui_name'] = $field_name . ':mlid';
+      $handler->display->display_options['arguments'][$field_name . '_mlid_1']['default_action'] = 'default';
+      $handler->display->display_options['arguments'][$field_name . '_mlid_1']['default_argument_type'] = 'menu_block_placement_mlid';
+      $handler->display->display_options['arguments'][$field_name . '_mlid_1']['summary']['number_of_records'] = '0';
+      $handler->display->display_options['arguments'][$field_name . '_mlid_1']['summary']['format'] = 'default_summary';
+      $handler->display->display_options['arguments'][$field_name . '_mlid_1']['summary_options']['items_per_page'] = '25';
+      $handler->display->display_options['arguments'][$field_name . '_mlid_1']['limit'] = '0';
+      $handler->display->display_options['arguments'][$field_name . '_mlid_1']['break_phrase'] = TRUE;
+    }
     /* Filter criterion: Content: Published */
     $handler->display->display_options['filters']['status']['id'] = 'status';
     $handler->display->display_options['filters']['status']['table'] = 'node';
@@ -83,12 +95,13 @@ function mbp_defaults_views_default_views() {
     $handler->display->display_options['filters']['status']['value'] = 1;
     $handler->display->display_options['filters']['status']['group'] = 1;
     $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
-    /* Filter criterion: Content: Block Settings (field_block_settings:individual_pages) */
-    $handler->display->display_options['filters'][$field_name . '_individual_pages']['id'] = $field_name . '_individual_pages';
-    $handler->display->display_options['filters'][$field_name . '_individual_pages']['table'] = 'field_data_' . $field_name;
-    $handler->display->display_options['filters'][$field_name . '_individual_pages']['field'] = $field_name . '_individual_pages';
-    $handler->display->display_options['filters'][$field_name . '_individual_pages']['value']['value'] = '1';
-
+    if($individual) {
+      /* Filter criterion: Content: Block Settings (field_block_settings:individual_pages) */
+      $handler->display->display_options['filters'][$field_name . '_individual_pages']['id'] = $field_name . '_individual_pages';
+      $handler->display->display_options['filters'][$field_name . '_individual_pages']['table'] = 'field_data_' . $field_name;
+      $handler->display->display_options['filters'][$field_name . '_individual_pages']['field'] = $field_name . '_individual_pages';
+      $handler->display->display_options['filters'][$field_name . '_individual_pages']['value']['value'] = '1';
+    }
     /* Display: Display */
     $handler = $view->new_display('block', 'Display', 'block');
 
