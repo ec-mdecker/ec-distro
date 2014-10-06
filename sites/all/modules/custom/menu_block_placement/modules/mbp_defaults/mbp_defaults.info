@@ -4,6 +4,7 @@ description = Automatically creates the proper views, quicktabs, and context upo
 
 scripts[] = mbp_defaults.js
 
+dependencies[] = contextual
 dependencies[] = menu_block_placement
 dependencies[] = quicktabs
 dependencies[] = draggableviews

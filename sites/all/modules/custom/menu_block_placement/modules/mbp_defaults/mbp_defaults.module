@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * Adds the new field name to the array variable or sets the variable with the field name
+ *
  *  Implements hook_field_create_field().
  */
 function mbp_defaults_field_create_field($field) {
@@ -8,7 +10,6 @@ function mbp_defaults_field_create_field($field) {
     $field_name = $field['field_name'];
     if (variable_get('mbp_defaults')) {
       $views = variable_get('mbp_defaults');
-
       $views[$field['id']] = $field_name;
       variable_set('mbp_defaults', $views);
     }
@@ -19,6 +20,8 @@ function mbp_defaults_field_create_field($field) {
 }
 
 /**
+ * Removes the field name from the array variable
+ *
  *  Implements hook_field_delete_field().
  */
 function mbp_defaults_field_delete_field($field) {
@@ -29,6 +32,9 @@ function mbp_defaults_field_delete_field($field) {
   }
 }
 
+/**
+ *  Implements hook_views_api().
+ */
 function mbp_defaults_views_api() {
   return array(
     'api' => 3,
@@ -36,11 +42,16 @@ function mbp_defaults_views_api() {
 }
 
 /**
+ * If a the view maintains its default state, the query will be altered
+ * to move the contextual filters into the normal filters.
+ * This helps when the 'Show only on selected pages' checkbox is present.
+ *
  *  Implements hook_views_query_alter().
  */
 function mbp_defaults_views_query_alter(&$view, &$query) {
   $tags = explode(', ', $view->tag);
   if (in_array('mbp_defaults', $tags) && $view->type == 'Default') {
+    //if the view contains a region and individual_pages fields
     if (in_array('mbp_regions', $tags) && in_array('mbp_individual', $tags)) {
       if (isset($query->where[1]) && isset($query->where[0]) && isset($query->where[0]['conditions'][0]) && isset($query->where[0]['conditions'][1]) && isset($query->where[0]['conditions'][2])) {
         $query->group_operator = 'OR';
@@ -53,6 +64,7 @@ function mbp_defaults_views_query_alter(&$view, &$query) {
         unset($query->where[0]);
       }
     }
+    //if the view contains only the individual_pages field
     elseif (in_array('mbp_individual', $tags)) {
       $query->group_operator = 'OR';
       $query->where[] = $query->where[1];
@@ -65,6 +77,10 @@ function mbp_defaults_views_query_alter(&$view, &$query) {
 }
 
 /**
+ * Structures the blocks info. If a MBP field contains the region select box,
+ * a block will be created for each region in the select list.
+ * If the region select box does not exist, a single block will be created.
+ *
  *  Implements hook_block_info().
  */
 function mbp_defaults_block_info() {
@@ -93,12 +109,15 @@ function mbp_defaults_block_info() {
 }
 
 /**
+ * Sets the block settings for the region
+ *
  *  Implements hook_block_info_alter().
  */
 function mbp_defaults_block_info_alter(&$blocks, $theme, $code_blocks) {
   if (isset($blocks['mbp_defaults']) && !empty($blocks['mbp_defaults'])) {
     foreach ($blocks['mbp_defaults'] as &$block) {
       if (strpos($block['delta'], '-', 5)) {
+        //checks if setting the region for the default theme, not the admin theme
         if (variable_get('theme_default', NULL) == $block['theme']) {
           $region = substr($block['delta'], strpos($block['delta'], '-', 5) + 1);
           $block['region'] = $region;
@@ -111,6 +130,8 @@ function mbp_defaults_block_info_alter(&$blocks, $theme, $code_blocks) {
 }
 
 /**
+ * Constructs the renderable array from the quicktabs module
+ *
  *  Implements hook_block_view().
  */
 function mbp_defaults_block_view($delta = '') {

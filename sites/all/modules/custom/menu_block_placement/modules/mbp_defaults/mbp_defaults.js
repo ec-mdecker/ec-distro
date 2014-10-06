@@ -1,3 +1,4 @@
+//moves the quicktabs links into the contextual links
 jQuery(document).ready(function ($) {
   $("[id^=block-mbp-defaults-mbp-]").each(function () {
     var links = $(this).find('ul.quicktabs-tabs').contents();

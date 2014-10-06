@@ -1,5 +1,11 @@
 <?php
 
+
+/**
+ * Sets the variable for the module using any existing fields of the MBP type.
+ *
+ * Implements hook_install().
+ */
 function mbp_defaults_install(){
   $fields = field_info_fields();
   $views = array();
