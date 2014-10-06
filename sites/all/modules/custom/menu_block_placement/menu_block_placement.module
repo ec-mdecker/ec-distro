@@ -188,7 +188,7 @@ function menu_block_placement_field_formatter_view($entity_type, $entity, &$fiel
           }
         }
       }
-      isset($items[0]['region']) ? $output['region'] = $regions[$items[0]['region']] : '';
+      isset($items[0]['region']) ? $output['region'] = (isset($regions[$items[0]['region']]) ? $regions[$items[0]['region']] : '') : '';
       isset($items[0]['individual_pages']) ? $output['individual_pages'] = ($items[0]['individual_pages'] ? 'True' : 'False') : '';
 
       //develops the html output of the data in a simple form
@@ -241,61 +241,62 @@ function menu_block_placement_field_formatter_view($entity_type, $entity, &$fiel
   }
 }
 
+
 /**
+ * If the form contains a MBP field, adds that field name to the form state to be used in the form alter
+ *
+ *  Implements hook_field_widget_form_alter().
+ */
+function menu_block_placement_field_widget_form_alter(&$element, &$form_state, $context) {
+  if (isset($element['mlid'])) {
+    $mbp_fields = isset($form_state['mbp_fields']) ? $form_state['mbp_fields'] : array();
+    !in_array($element['#field_name'], $mbp_fields) ? $mbp_fields[] = $element['#field_name'] : '';
+    $form_state['mbp_fields'] = $mbp_fields;
+  }
+}
+
+
+/**
+ * Since the field must be set to unlimited items, we have to alter the form to hide duplicated
+ * field widgets. This will also pull in the correct data for the field.
+ *
  *  Implements hook_form_alter().
  */
 function menu_block_placement_form_alter(&$form, &$form_state, $form_id) {
-
-  if ($form_id == 'field_ui_field_edit_form' && $form['#field']['type'] =='menu_block_placement_reference') {
+  if ($form_id == 'field_ui_field_edit_form' && $form['#field']['type'] == 'menu_block_placement_reference') {
     $form['field']['cardinality']['#options'] = array(-1 => 'Unlimited');
   }
 
-  if (isset($form['#node_edit_form']) && $form['#node_edit_form']) {
-    $field_names = array();
-    foreach ($form_state['field'] as $field) {
-      if (isset($field[$form['language']['#value']]) && $field[$form['language']['#value']]['field']['type'] == 'menu_block_placement_reference') {
-        //checks and sets the field name to be used to alter the form for that particular field
-        $field_names[] = $field[$form['language']['#value']]['field']['field_name'];
+  if (isset($form_state['mbp_fields'])) {
+    $lang = $form['language']['#value'];
+    foreach ($form_state['mbp_fields'] as $field) {
+      //mimick a single field instead of unlimited fields
+      $form[$field][$lang]['#cardinality'] = 1;
+
+      //unsets all repeated field settings
+      foreach ($form[$field][$lang] as $key => $value) {
+        if (isset($value['mlid']) && $key != 0) {
+          unset($form[$field][$lang][$key]);
+        }
       }
-    }
 
-
-    //loops through all the valid fields in he form
-    foreach ($field_names as $field_name) {
-      //changes the form to only display one field, not multiple fields
-      $form[$field_name][$form['language']['#value']]['#cardinality'] = '1';
-      //duplicates the basic field settings to be re-injected later
-      $temp_field = $form[$field_name][$form['language']['#value']][0];
-      //unsets values to hide the add more and weight attributes
-      unset($form[$field_name][$form['language']['#value']]['add_more']);
-      unset($temp_field['_weight']);
+      //unsets add more & weight
+      unset($form[$field][$lang]['add_more']);
+      unset($form[$field][$lang][0]['_weight']);
 
       //queries the db to find all the mlid's for the current node
-      $items = db_select('field_data_' . $field_name, 'f')
-        ->fields('f', array($field_name . '_mlid'))
+      $items = db_select('field_data_' . $field, 'f')
+        ->fields('f', array($field . '_mlid'))
         ->condition('entity_id', $form['nid'])
         ->condition('revision_id', $form['vid'])
         ->execute();
 
       //creates an array from the mlid's for the current node
-      $default_mlid = array();
-      $db_field_name = $field_name . '_mlid';
+      $form[$field][$lang][0]['mlid']['#default_value'] = array();
       foreach ($items as $item) {
-        $default_mlid[] = $item->$db_field_name;
+        $item = (array)$item;
+        $form[$field][$lang][0]['mlid']['#default_value'][] = $item[$field . '_mlid'];
       }
-
-      //sets the default mlid values
-      $temp_field['mlid']['#default_value'] = $default_mlid;
-
-      //unsets the original data that was pulled in
-      foreach ($form[$field_name][$form['language']['#value']] as $key => $value) {
-        if (isset($value['mlid'])) {
-          unset($form[$field_name][$form['language']['#value']][$key]);
-        }
-      }
-
-      //sets the data from the manipulated data.
-      $form[$field_name][$form['language']['#value']][0] = $temp_field;
     }
   }
 }
