@@ -91,7 +91,7 @@ function menu_block_placement_field_settings_form($field, $instance) {
  */
 function menu_block_placement_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
   //sets regions and menu variables
-  $regions = variable_get('menu_block_placement_regions');
+  $regions = variable_get('mbp_regions');
   $options = _menu_block_placement_menu_items($field);
 
   //menu mlid select list
@@ -99,7 +99,7 @@ function menu_block_placement_field_widget_form(&$form, &$form_state, $field, $i
     '#type' => 'select',
     '#title' => t('Menu Item'),
     '#options' => $options,
-    '#multiple' => TRUE,
+    '#multiple' => $field['cardinality'] == '-1' ? TRUE : FALSE,
     '#required' => $instance['required'],
     '#default_value' => isset($items[0]['mlid']) ? $items[0]['mlid'] : (isset($instance['default_value'][0]['mlid']) ? $instance['default_value'][0]['mlid'] : ''),
   );
@@ -174,7 +174,7 @@ function menu_block_placement_field_formatter_info() {
  */
 function menu_block_placement_field_formatter_view($entity_type, $entity, &$field, $instance, $langcode, $items, $display) {
   $menu_array = _menu_block_placement_menu_items($field);
-  $regions = variable_get('menu_block_placement_regions');
+  $regions = variable_get('mbp_regions');
   $output = array();
   $element = array();
 
@@ -222,25 +222,36 @@ function menu_block_placement_field_formatter_view($entity_type, $entity, &$fiel
       }
       break;
     case 'menu_block_placement_region':
-      $element = array(
-        array(
-          '#markup' => !empty($items[0]['region']) ? $regions[$items[0]['region']] : '',
-        ),
-      );
+      if (!empty($items[0]['region'])) {
+        $element[] = array('#markup' => $regions[$items[0]['region']],);
+      }
+
       break;
     case 'menu_block_placement_ind_pages':
-      $element = array(
-        array(
-          '#markup' => !empty($items[0]['individual_pages']) ? ($items[0]['individual_pages'] ? 'True' : 'False') : '',
-        ),
-      );
+      if (isset($items[0]['individual_pages'])) {
+        $element[] = $items[0]['individual_pages'] ? 'True' : 'False';
+      }
       break;
   }
-  if (strlen($element[0]['#markup']) != 0) {
-    return $element;
-  }
+dpm($items);
+dpm($element);
+  return $element;
+
 }
 
+/**
+ * Removes options from the "Number of values' that aren't compatible with this field
+ *
+ *  Implements hook_form_FORM_ID_alter().
+ */
+function menu_block_placement_form_field_ui_field_edit_form_alter(&$form, &$form_state, $form_id) {
+  if ($form['#field']['type'] == 'menu_block_placement_reference') {
+    $form['field']['cardinality']['#options'] = array(
+      -1 => 'Unlimited',
+      1 => 1
+    );
+  }
+}
 
 /**
  * If the form contains a MBP field, adds that field name to the form state to be used in the form alter
@@ -252,9 +263,9 @@ function menu_block_placement_field_widget_form_alter(&$element, &$form_state, $
     $mbp_fields = isset($form_state['mbp_fields']) ? $form_state['mbp_fields'] : array();
     !in_array($element['#field_name'], $mbp_fields) ? $mbp_fields[] = $element['#field_name'] : '';
     $form_state['mbp_fields'] = $mbp_fields;
+    unset($element['_weight']);
   }
 }
-
 
 /**
  * Since the field must be set to unlimited items, we have to alter the form to hide duplicated
@@ -263,21 +274,16 @@ function menu_block_placement_field_widget_form_alter(&$element, &$form_state, $
  *  Implements hook_form_alter().
  */
 function menu_block_placement_form_alter(&$form, &$form_state, $form_id) {
-  if ($form_id == 'field_ui_field_edit_form' && $form['#field']['type'] == 'menu_block_placement_reference') {
-    $form['field']['cardinality']['#options'] = array(-1 => 'Unlimited');
-  }
-
-  if(isset($form['#entity_type']) && $form['#entity_type'] != 'node'){
+  if (isset($form['#entity_type']) && $form['#entity_type'] != 'node') {
     unset($form['fields']['_add_new_field']['type']['#options']['menu_block_placement_reference']);
-    foreach(field_info_fields() as $field){
-      if($field['type'] == 'menu_block_placement_reference'){
+    foreach (field_info_fields() as $field) {
+      if ($field['type'] == 'menu_block_placement_reference') {
         unset($form['fields']['_add_existing_field']['field_name']['#options'][$field['field_name']]);
       }
     }
   }
 
-
-  if (isset($form_state['mbp_fields']) && $form_id != 'field_ui_field_edit_form') {
+  if (isset($form_state['mbp_fields']) && isset($form['#node_edit_form']) && $form['#node_edit_form']) {
     $lang = $form['language']['#value'];
     foreach ($form_state['mbp_fields'] as $field) {
       //mimick a single field instead of unlimited fields
@@ -290,9 +296,8 @@ function menu_block_placement_form_alter(&$form, &$form_state, $form_id) {
         }
       }
 
-      //unsets add more & weight
+      //unsets add more
       unset($form[$field][$lang]['add_more']);
-      unset($form[$field][$lang][0]['_weight']);
 
       //queries the db to find all the mlid's for the current node
       $items = db_select('field_data_' . $field, 'f')
@@ -343,12 +348,12 @@ function menu_block_placement_views_api() {
  * Implements hook_flush_caches().
  */
 function menu_block_placement_flush_caches() {
-  _menu_block_placement_regions();
+  _mbp_regions_set();
 }
 
 
 //helper function to set the variable for available regions in the select list
-function _menu_block_placement_regions() {
+function _mbp_regions_set() {
   //creates the array for the regions select list
   $available_regions = array();
   $path_to_info = drupal_get_path('theme', variable_get('theme_default', NULL)) . '/' . variable_get('theme_default', NULL) . '.info';
@@ -368,7 +373,7 @@ function _menu_block_placement_regions() {
   }
 
   //sets the variable for use in the field.
-  variable_set('menu_block_placement_regions', $available_regions);
+  variable_set('mbp_regions', $available_regions);
 }
 
 function _menu_block_placement_menu_items($field) {
@@ -388,6 +393,7 @@ function _menu_block_placement_menu_items($field) {
       $menu_machine_name = ucwords(str_replace("-", " ", array_shift($exploded_key)));
       $menu_id = array_pop($exploded_key);
       if ($menu_id != 0) {
+        $value = substr($value, 0, 2) == '--' ? substr($value, 2) : $value;
         $options[$menu_machine_name][$menu_id] = str_replace(array(
           "<",
           ">"

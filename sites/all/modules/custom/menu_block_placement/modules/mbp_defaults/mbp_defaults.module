@@ -84,12 +84,13 @@ function mbp_defaults_views_query_alter(&$view, &$query) {
  *  Implements hook_block_info().
  */
 function mbp_defaults_block_info() {
-  $regions = variable_get('menu_block_placement_regions');
+  $regions = variable_get('mbp_regions');
   $fields = variable_get('mbp_defaults');
   $blocks = array();
   foreach ($fields as $fid => $field) {
     $field_settings = field_info_field($field);
     if ($field_settings['settings']['default_selects']['region']) {
+
       foreach ($regions as $key => $label) {
         $blocks['mbp-' . $fid . '-' . $key] = array(
           'info' => t('MBP-' . substr($field, 6) . '-' . $label),
