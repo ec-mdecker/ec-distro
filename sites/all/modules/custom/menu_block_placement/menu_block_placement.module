@@ -267,7 +267,17 @@ function menu_block_placement_form_alter(&$form, &$form_state, $form_id) {
     $form['field']['cardinality']['#options'] = array(-1 => 'Unlimited');
   }
 
-  if (isset($form_state['mbp_fields'])) {
+  if(isset($form['#entity_type']) && $form['#entity_type'] != 'node'){
+    unset($form['fields']['_add_new_field']['type']['#options']['menu_block_placement_reference']);
+    foreach(field_info_fields() as $field){
+      if($field['type'] == 'menu_block_placement_reference'){
+        unset($form['fields']['_add_existing_field']['field_name']['#options'][$field['field_name']]);
+      }
+    }
+  }
+
+
+  if (isset($form_state['mbp_fields']) && $form_id != 'field_ui_field_edit_form') {
     $lang = $form['language']['#value'];
     foreach ($form_state['mbp_fields'] as $field) {
       //mimick a single field instead of unlimited fields
@@ -294,7 +304,7 @@ function menu_block_placement_form_alter(&$form, &$form_state, $form_id) {
       //creates an array from the mlid's for the current node
       $form[$field][$lang][0]['mlid']['#default_value'] = array();
       foreach ($items as $item) {
-        $item = (array)$item;
+        $item = (array) $item;
         $form[$field][$lang][0]['mlid']['#default_value'][] = $item[$field . '_mlid'];
       }
     }
