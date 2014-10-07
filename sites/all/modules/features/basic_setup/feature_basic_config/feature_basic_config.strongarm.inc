@@ -333,6 +333,63 @@ function feature_basic_config_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'insert_view_admin_views_comment_displays';
+  $strongarm->value = array(
+    'admin_views_comment=system_1' => 'admin_views_comment=system_1',
+    'admin_views_comment=system_2' => 'admin_views_comment=system_2',
+  );
+  $export['insert_view_admin_views_comment_displays'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'insert_view_admin_views_file_displays';
+  $strongarm->value = array(
+    'admin_views_file=system_1' => 'admin_views_file=system_1',
+  );
+  $export['insert_view_admin_views_file_displays'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'insert_view_admin_views_node_displays';
+  $strongarm->value = array(
+    'admin_views_node=system_1' => 'admin_views_node=system_1',
+  );
+  $export['insert_view_admin_views_node_displays'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'insert_view_admin_views_user_displays';
+  $strongarm->value = array(
+    'admin_views_user=system_1' => 'admin_views_user=system_1',
+  );
+  $export['insert_view_admin_views_user_displays'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'insert_view_media_default_displays';
+  $strongarm->value = array(
+    'media_default=media_browser_1' => 'media_default=media_browser_1',
+    'media_default=media_browser_my_files' => 'media_default=media_browser_my_files',
+  );
+  $export['insert_view_media_default_displays'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'insert_view_sitemap_displays';
+  $strongarm->value = array(
+    'sitemap=page' => 'sitemap=page',
+    'sitemap=attachment' => 'sitemap=attachment',
+  );
+  $export['insert_view_sitemap_displays'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'jquery_update_jquery_version';
   $strongarm->value = '1.8';
   $export['jquery_update_jquery_version'] = $strongarm;

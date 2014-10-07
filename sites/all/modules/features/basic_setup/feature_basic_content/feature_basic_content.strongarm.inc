@@ -286,124 +286,22 @@ function feature_basic_content_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
-  $strongarm->name = 'insert_view_admin_views_comment_displays';
+  $strongarm->name = 'insert_view_mbp_6_displays';
   $strongarm->value = array(
-    'admin_views_comment=system_1' => 'admin_views_comment=system_1',
-    'admin_views_comment=system_2' => 'admin_views_comment=system_2',
+    'mbp_6=block' => 'mbp_6=block',
+    'mbp_6=block_1' => 'mbp_6=block_1',
   );
-  $export['insert_view_admin_views_comment_displays'] = $strongarm;
+  $export['insert_view_mbp_6_displays'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
-  $strongarm->name = 'insert_view_admin_views_file_displays';
+  $strongarm->name = 'insert_view_mbp_7_displays';
   $strongarm->value = array(
-    'admin_views_file=system_1' => 'admin_views_file=system_1',
+    'mbp_7=block' => 'mbp_7=block',
+    'mbp_7=block_1' => 'mbp_7=block_1',
   );
-  $export['insert_view_admin_views_file_displays'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'insert_view_admin_views_node_displays';
-  $strongarm->value = array(
-    'admin_views_node=system_1' => 'admin_views_node=system_1',
-  );
-  $export['insert_view_admin_views_node_displays'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'insert_view_admin_views_user_displays';
-  $strongarm->value = array(
-    'admin_views_user=system_1' => 'admin_views_user=system_1',
-  );
-  $export['insert_view_admin_views_user_displays'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'insert_view_basic_blocks_displays_displays';
-  $strongarm->value = array(
-    'basic_blocks_displays=block' => 'basic_blocks_displays=block',
-    'basic_blocks_displays=block_1' => 'basic_blocks_displays=block_1',
-    'basic_blocks_displays=block_2' => 'basic_blocks_displays=block_2',
-    'basic_blocks_displays=block_3' => 'basic_blocks_displays=block_3',
-    'basic_blocks_displays=block_4' => 'basic_blocks_displays=block_4',
-    'basic_blocks_displays=block_5' => 'basic_blocks_displays=block_5',
-    'basic_blocks_displays=block_6' => 'basic_blocks_displays=block_6',
-    'basic_blocks_displays=block_7' => 'basic_blocks_displays=block_7',
-    'basic_blocks_displays=block_8' => 'basic_blocks_displays=block_8',
-    'basic_blocks_displays=block_9' => 'basic_blocks_displays=block_9',
-  );
-  $export['insert_view_basic_blocks_displays_displays'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'insert_view_basic_blocks_sort_displays';
-  $strongarm->value = array(
-    'basic_blocks_sort=block' => 'basic_blocks_sort=block',
-    'basic_blocks_sort=block_1' => 'basic_blocks_sort=block_1',
-    'basic_blocks_sort=block_2' => 'basic_blocks_sort=block_2',
-    'basic_blocks_sort=block_3' => 'basic_blocks_sort=block_3',
-    'basic_blocks_sort=block_4' => 'basic_blocks_sort=block_4',
-    'basic_blocks_sort=block_5' => 'basic_blocks_sort=block_5',
-    'basic_blocks_sort=block_6' => 'basic_blocks_sort=block_6',
-    'basic_blocks_sort=block_7' => 'basic_blocks_sort=block_7',
-    'basic_blocks_sort=block_8' => 'basic_blocks_sort=block_8',
-    'basic_blocks_sort=block_9' => 'basic_blocks_sort=block_9',
-  );
-  $export['insert_view_basic_blocks_sort_displays'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'insert_view_basic_slideshow_displays';
-  $strongarm->value = array(
-    'basic_slideshow=block' => 'basic_slideshow=block',
-  );
-  $export['insert_view_basic_slideshow_displays'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'insert_view_draggable_views_displays';
-  $strongarm->value = array(
-    'draggable_views=block' => 'draggable_views=block',
-    'draggable_views=block_1' => 'draggable_views=block_1',
-  );
-  $export['insert_view_draggable_views_displays'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'insert_view_media_default_displays';
-  $strongarm->value = array(
-    'media_default=media_browser_1' => 'media_default=media_browser_1',
-    'media_default=media_browser_my_files' => 'media_default=media_browser_my_files',
-  );
-  $export['insert_view_media_default_displays'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'insert_view_sitemap_displays';
-  $strongarm->value = array(
-    'sitemap=page' => 'sitemap=page',
-    'sitemap=attachment' => 'sitemap=attachment',
-  );
-  $export['insert_view_sitemap_displays'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'insert_view_slideshow_blocks_displays';
-  $strongarm->value = array(
-    'slideshow_blocks=block' => 'slideshow_blocks=block',
-    'slideshow_blocks=block_1' => 'slideshow_blocks=block_1',
-  );
-  $export['insert_view_slideshow_blocks_displays'] = $strongarm;
+  $export['insert_view_mbp_7_displays'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */

@@ -16,10 +16,6 @@ function insert_view_gen_permission() {
       'title' => t('Use Insert View Generator'),
       'description' => t('Gives access to the insert view generator field. NOTE: This does not restrict them from actually using the insert view module.')
     ),
-    'insert view gen arguments' => array(
-      'title' => t('Allow for the arguments in form.'),
-      'description' => t('Show or hide the arguments from the node form.'),
-    ),
   );
 }
 
@@ -68,21 +64,6 @@ function insert_view_gen_config() {
   }
 
   return system_settings_form($form);
-}
-
-//creates the array to be used in the admin form and the select list
-function _insert_view_gen_views() {
-  $view_list = array();
-  foreach (views_get_enabled_views() as $key => $view) {
-    $displays = $view->display;
-    $view_list[$key] = array('human_name' => $view->human_name);
-    foreach ($displays as $display_key => $display) {
-      if ($display->id != 'default') {
-        $view_list[$key]['displays'][$key . '=' . $display_key] = t($display->display_title);
-      }
-    }
-  }
-  return $view_list;
 }
 
 /*
@@ -136,37 +117,36 @@ function insert_view_gen_field_widget_form(&$form, &$form_state, $field, $instan
       '#title' => t('Available Views'),
       '#options' => $options,
     );
-    if (user_access('insert view gen arguments') || user_access('bypass insert view gen')) {
-      $element['include_args'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Include Arguments for the view'),
-        '#tree' => FALSE,
-      );
-      $element['args'] = array(
-        '#type' => 'container',
-        '#states' => array(
-          'invisible' => array(
-            ':input[name="include_args"]' => array('checked' => FALSE),
-          ),
+    $element['include_args'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Include Arguments for the view'),
+      '#tree' => FALSE,
+    );
+    $element['args'] = array(
+      '#type' => 'container',
+      '#states' => array(
+        'invisible' => array(
+          ':input[name="include_args"]' => array('checked' => FALSE),
         ),
-      );
-      $element['args']['arg_1'] = array(
-        '#type' => 'textfield',
-        '#title' => t('Argument #1'),
-        '#size' => 20,
-      );
-      $element['args']['arg_2'] = array(
-        '#type' => 'textfield',
-        '#title' => t('Argument #2'),
-        '#size' => 20,
-      );
-      $element['args']['arg_3'] = array(
-        '#type' => 'textfield',
-        '#title' => t('Argument #3'),
-        '#size' => 20,
+      ),
+    );
+    $element['args']['arg_1'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Argument #1'),
+      '#size' => 20,
+    );
+    $element['args']['arg_2'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Argument #2'),
+      '#size' => 20,
+    );
+    $element['args']['arg_3'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Argument #3'),
+      '#size' => 20,
 
-      );
-    }
+    );
+
     $element['generated_code'] = array(
       '#markup' => '<div style="display:none; " class="form-item insert-view-code">Copy and paste the text below to display the view in this content.<br><div class="insert-view-gen-code"></div></div>',
       '#attached' => array(
@@ -194,13 +174,18 @@ function insert_view_gen_field_is_empty($item, $field) {
   return FALSE;
 }
 
-/*
- * Implements hook_uninstall()
- */
-function insert_view_gen_uninstall() {
-  $view_list = _insert_view_gen_views();
-  foreach ($view_list as $view_key => $view) {
-    variable_del('insert_view_' . $view_key . '_displays');
-  }
-}
 
+//creates the array to be used in the admin form and the select list
+function _insert_view_gen_views() {
+  $view_list = array();
+  foreach (views_get_enabled_views() as $key => $view) {
+    $displays = $view->display;
+    $view_list[$key] = array('human_name' => $view->human_name);
+    foreach ($displays as $display_key => $display) {
+      if ($display->id != 'default') {
+        $view_list[$key]['displays'][$key . '=' . $display_key] = t($display->display_title);
+      }
+    }
+  }
+  return $view_list;
+}
