@@ -157,6 +157,24 @@ function insert_view_gen_field_widget_form(&$form, &$form_state, $field, $instan
   return $element;
 }
 
+/**
+ *  Implements hook_cron().
+ */
+function insert_view_gen_cron() {
+  GLOBAL $conf;
+  dpm($conf);
+  $current_views = views_get_all_views();
+  foreach ($conf as $key => $value) {
+    if (substr($key, 0, 12) == 'insert_view_' && substr($key, strlen($key) - 9) == '_displays') {
+      $view_key = substr($key, 12, strlen($key) - 21);
+      if (!array_key_exists($view_key, $current_views)) {
+        variable_del($key);
+      }
+    }
+  }
+}
+
+
 /*
  * Implements hook_field_widget_info_alter()
  */
@@ -168,10 +186,7 @@ function insert_view_gen_field_widget_info_alter($info) {
  * Implements hook_filed_is_empty()
  */
 function insert_view_gen_field_is_empty($item, $field) {
-  if (!is_array($item)) {
-    return TRUE;
-  }
-  return FALSE;
+  return !is_array($item) ? TRUE : FALSE;
 }
 
 

@@ -19,10 +19,15 @@ function insert_view_gen_field_schema($field) {
  *  Implements hook_uninstall().
  */
 function insert_view_gen_uninstall() {
-  foreach (views_get_all_views() as $key => $view) {
-    $var = variable_get('insert_view_' . $key . '_displays');
-    if (!is_null($var)) {
-      variable_DEL('insert_view_' . $key . '_displays');
+  GLOBAL $conf;
+  dpm($conf);
+  $current_views = views_get_all_views();
+  foreach ($conf as $key => $value) {
+    if (substr($key, 0, 12) == 'insert_view_' && substr($key, strlen($key) - 9) == '_displays') {
+      $view_key = substr($key, 12, strlen($key) - 21);
+      if(!array_key_exists($view_key, $current_views)){
+        variable_del($key);
+      }
     }
   }
 }
