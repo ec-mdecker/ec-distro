@@ -90,7 +90,6 @@ function mbp_defaults_block_info() {
   foreach ($fields as $fid => $field) {
     $field_settings = field_info_field($field);
     if ($field_settings['settings']['default_selects']['region']) {
-
       foreach ($regions as $key => $label) {
         $blocks['mbp-' . $fid . '-' . $key] = array(
           'info' => t('MBP-' . substr($field, 6) . '-' . $label),
@@ -125,6 +124,7 @@ function mbp_defaults_block_info_alter(&$blocks, $theme, $code_blocks) {
           $block['status'] = '1';
           $block['pages'] = 'node/*/edit';
           $block['weight'] = 10;
+          $block['custom'] = 2;
         }
       }
     }
@@ -149,6 +149,19 @@ function mbp_defaults_block_view($delta = '') {
     );
     return $block;
   }
+  else {
+    return array();
+  }
+}
+
+/**
+ *  Implements hook_flush_caches().
+ */
+function mbp_defaults_flush_caches() {
+  db_delete('block')
+    ->condition('module', 'mbp_defaults')
+    ->condition('custom', '2')
+    ->execute();
 }
 
 /*
