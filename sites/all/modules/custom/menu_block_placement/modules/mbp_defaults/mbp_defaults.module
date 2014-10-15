@@ -9,9 +9,9 @@ function mbp_defaults_field_create_field($field) {
   if ($field['type'] == 'menu_block_placement_reference') {
     $field_name = $field['field_name'];
     if (variable_get('mbp_defaults')) {
-      $views = variable_get('mbp_defaults');
-      $views[$field['id']] = $field_name;
-      variable_set('mbp_defaults', $views);
+      $fields = variable_get('mbp_defaults');
+      $fields[$field['id']] = $field_name;
+      variable_set('mbp_defaults', $fields);
     }
     else {
       variable_set('mbp_defaults', array($field['id'] => $field_name));
@@ -26,9 +26,9 @@ function mbp_defaults_field_create_field($field) {
  */
 function mbp_defaults_field_delete_field($field) {
   if ($field['type'] == 'menu_block_placement_reference') {
-    $views = variable_get('mbp_defaults');
-    unset($views[$field['id']]);
-    variable_set('mbp_defaults', $views);
+    $fields = variable_get('mbp_defaults');
+    unset($fields[$field['id']]);
+    variable_set('mbp_defaults', $fields);
   }
 }
 
@@ -86,10 +86,13 @@ function mbp_defaults_views_query_alter(&$view, &$query) {
 function mbp_defaults_block_info() {
   $regions = variable_get('mbp_regions');
   $fields = variable_get('mbp_defaults');
+
   $blocks = array();
   foreach ($fields as $fid => $field) {
+    //checks if the field contains the region select list
     $field_settings = field_info_field($field);
     if ($field_settings['settings']['default_selects']['region']) {
+      //creates a block for reach region
       foreach ($regions as $key => $label) {
         $blocks['mbp-' . $fid . '-' . $key] = array(
           'info' => t('MBP-' . substr($field, 6) . '-' . $label),
@@ -98,6 +101,7 @@ function mbp_defaults_block_info() {
       }
     }
     else {
+      //creates a single block to be placed on any region
       $blocks['mbp-' . $fid] = array(
         'info' => t('MBP-' . substr($field, 6)),
         'cache' => DRUPAL_NO_CACHE,
@@ -124,7 +128,7 @@ function mbp_defaults_block_info_alter(&$blocks, $theme, $code_blocks) {
           $block['status'] = '1';
           $block['pages'] = 'node/*/edit';
           $block['weight'] = 10;
-          $block['custom'] = 2;
+          $block['custom'] = 1;
         }
       }
     }
@@ -160,7 +164,7 @@ function mbp_defaults_block_view($delta = '') {
 function mbp_defaults_flush_caches() {
   db_delete('block')
     ->condition('module', 'mbp_defaults')
-    ->condition('custom', '2')
+    ->condition('custom', '1')
     ->execute();
 }
 
