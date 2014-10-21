@@ -51,6 +51,27 @@ function mbp_defaults_config() {
     ),
     '#default_value' => variable_get('mbp_defaults_contextual', 1),
   );
+  if (module_exists('quicktabs_tabstyles')) {
+
+    $options = array();
+    $styles = module_invoke_all('quicktabs_tabstyles');
+    foreach ($styles as $style) {
+      $options[$style] = $style;
+    }
+    ksort($options);
+
+    $form['mbp_defaults_style'] = array(
+      '#type' => 'radios',
+      '#title' => t('Tab Style (if displaysing as tabs).'),
+      '#options' => array('nostyle' => t('No style')) + $options,
+      '#default_value' => variable_get('mbp_defaults_style', 'Zen'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="mbp_defaults_contextual"]' => array('value' => 0),
+        )
+      ),
+    );
+  }
 
   return system_settings_form($form);
 }
@@ -252,7 +273,7 @@ function mbp_defaults_flush_caches() {
 function mbp_defaults_build_quicktabs($field_id, $field_name, $region) {
   $field_settings = field_info_field($field_name);
   $settings = array(
-    'style' => 'Zen',
+    'style' => variable_get('mbp_defaults_style', 'Zen'),
     'renderer' => 'quicktabs',
     'hide_empty_tabs' => TRUE,
     'default_tab' => 0,
