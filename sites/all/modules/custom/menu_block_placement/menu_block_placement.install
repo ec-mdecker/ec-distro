@@ -36,7 +36,7 @@ function menu_block_placement_field_schema($field) {
   return $schema;
 }
 
-/*
+/**
  * Implements hook_install().
  */
 function menu_block_placement_install() {
@@ -44,7 +44,7 @@ function menu_block_placement_install() {
 }
 
 /**
- *  Implements hook_uninstall().
+ * Implements hook_uninstall().
  */
 function menu_block_placement_uninstall() {
   variable_del('mbp_regions');

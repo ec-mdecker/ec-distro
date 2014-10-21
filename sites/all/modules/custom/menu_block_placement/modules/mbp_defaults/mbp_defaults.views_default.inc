@@ -1,6 +1,11 @@
 <?php
 /**
- *  Implements hook_views_default_views().
+ * @file
+ * Default views based on the available fields from MBP.
+ */
+
+/**
+ * Implements hook_views_default_views().
  */
 function mbp_defaults_views_default_views() {
   //lists of all available MBP fields
@@ -104,7 +109,7 @@ function mbp_defaults_views_default_views() {
     $handler->display->display_options['sorts']['weight']['id'] = 'weight';
     $handler->display->display_options['sorts']['weight']['table'] = 'draggableviews_structure';
     $handler->display->display_options['sorts']['weight']['field'] = 'weight';
-    $handler->display->display_options['sorts']['weight']['draggableviews_setting_view'] = 'mbp_' .$key . ':block_1';
+    $handler->display->display_options['sorts']['weight']['draggableviews_setting_view'] = 'mbp_' . $key . ':block_1';
     $handler->display->display_options['sorts']['weight']['draggableviews_setting_new_items_bottom_list'] = 1;
 
     /* Display: Sort */

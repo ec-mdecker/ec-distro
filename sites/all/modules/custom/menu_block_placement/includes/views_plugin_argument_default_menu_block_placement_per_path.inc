@@ -22,7 +22,7 @@ class views_plugin_argument_default_menu_block_placement_per_path extends views_
   }
 
   /**
-   * Retrives the node ids that have been assigned to a specific menu link id.
+   * Retrieves the node ids that have been assigned to a specific menu link id.
    */
   function get_menu_item($path) {
     $active_trail = menu_get_active_trail();

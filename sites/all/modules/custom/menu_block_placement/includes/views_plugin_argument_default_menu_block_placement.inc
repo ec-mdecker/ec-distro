@@ -23,11 +23,11 @@ class views_plugin_argument_default_menu_block_placement extends views_plugin_ar
 
 
   /*
-   * Retrives the node ids that have been assigned to a specific menu link id.
+   * Retrieves the node ids that have been assigned to a specific menu link id.
    * It checks for parent mlids as well.
    */
   function get_menu_parents($path) {
-    $parent_items = & drupal_static(__FUNCTION__);
+    $parent_items = &drupal_static(__FUNCTION__);
     if (isset($parent_items[$path])) {
       return $parent_items[$path];
     }

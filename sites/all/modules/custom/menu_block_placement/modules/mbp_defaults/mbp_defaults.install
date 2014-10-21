@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Sets & deletes a variable of existing fields from MBP.
+ */
 
 
 /**
@@ -6,11 +10,11 @@
  *
  * Implements hook_install().
  */
-function mbp_defaults_install(){
+function mbp_defaults_install() {
   $fields = field_info_fields();
   $mbp_fields = array();
-  foreach($fields as $field){
-    if($field['type'] == 'menu_block_placement_reference'){
+  foreach ($fields as $field) {
+    if ($field['type'] == 'menu_block_placement_reference') {
       $mbp_fields[$field['id']] = $field['field_name'];
     }
   }
@@ -19,8 +23,8 @@ function mbp_defaults_install(){
 }
 
 /**
- *  Implements hook_uninstall().
+ * Implements hook_uninstall().
  */
-function mbp_defaults_uninstall(){
+function mbp_defaults_uninstall() {
   variable_del('mbp_defaults');
 }

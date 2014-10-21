@@ -1,9 +1,65 @@
 <?php
+/**
+ * @file
+ * Creates and configures blocks based on available fields from MBP module.
+ */
+
+
+/**
+ * Implements hook_permission().
+ */
+function mbp_defaults_permission() {
+  return array(
+    'config mbp defaults' => array(
+      'title' => t('Configure Menu Block Placement Defaults Settings'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function mbp_defaults_menu() {
+  $items = array(
+    'admin/config/mbp-defaults' => array(
+      'title' => "Menu Block Placement Defaults",
+      'description' => 'Apply settings for pre-configured blocks.',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('mbp_defaults_config'),
+      'access arguments' => array('config mbp defaults'),
+      'type' => MENU_NORMAL_ITEM,
+    ),
+  );
+  return $items;
+}
+
+/**
+ * Module configuration page function.
+ */
+function mbp_defaults_config() {
+  $form = array();
+  if (!module_exists('contextual') && variable_get('mbp_defaults_contextual', 1) == 1) {
+    drupal_set_message(t('You must have Contextual Module enabled to display the links as contextual links.'), 'error');
+  }
+
+  $form['mbp_defaults_contextual'] = array(
+    '#type' => 'radios',
+    '#title' => t('How to show the "Display" & "Sort/Edit" links'),
+    '#options' => array(
+      0 => t('As Tabs'),
+      1 => t('As Contextual Links'),
+    ),
+    '#default_value' => variable_get('mbp_defaults_contextual', 1),
+  );
+
+  return system_settings_form($form);
+}
+
 
 /**
  * Adds the new field name to the array variable or sets the variable with the field name
  *
- *  Implements hook_field_create_field().
+ * Implements hook_field_create_field().
  */
 function mbp_defaults_field_create_field($field) {
   if ($field['type'] == 'menu_block_placement_reference') {
@@ -22,7 +78,7 @@ function mbp_defaults_field_create_field($field) {
 /**
  * Removes the field name from the array variable
  *
- *  Implements hook_field_delete_field().
+ * Implements hook_field_delete_field().
  */
 function mbp_defaults_field_delete_field($field) {
   if ($field['type'] == 'menu_block_placement_reference') {
@@ -33,7 +89,7 @@ function mbp_defaults_field_delete_field($field) {
 }
 
 /**
- *  Implements hook_views_api().
+ * Implements hook_views_api().
  */
 function mbp_defaults_views_api() {
   return array(
@@ -42,11 +98,20 @@ function mbp_defaults_views_api() {
 }
 
 /**
+ * Implements hook_ctools_plugin_api().
+ */
+function mbp_defaults_ctools_plugin_api($owner, $api) {
+  if ($owner == "context" && $api == "context") {
+    return array("version" => 3);
+  }
+}
+
+/**
  * If a the view maintains its default state, the query will be altered
  * to move the contextual filters into the normal filters.
  * This helps when the 'Show only on selected pages' checkbox is present.
  *
- *  Implements hook_views_query_alter().
+ * Implements hook_views_query_alter().
  */
 function mbp_defaults_views_query_alter(&$view, &$query) {
   $tags = explode(', ', $view->tag);
@@ -81,7 +146,7 @@ function mbp_defaults_views_query_alter(&$view, &$query) {
  * a block will be created for each region in the select list.
  * If the region select box does not exist, a single block will be created.
  *
- *  Implements hook_block_info().
+ * Implements hook_block_info().
  */
 function mbp_defaults_block_info() {
   $regions = variable_get('mbp_regions');
@@ -113,32 +178,9 @@ function mbp_defaults_block_info() {
 }
 
 /**
- * Sets the block settings for the region
- *
- *  Implements hook_block_info_alter().
- */
-function mbp_defaults_block_info_alter(&$blocks, $theme, $code_blocks) {
-  if (isset($blocks['mbp_defaults']) && !empty($blocks['mbp_defaults'])) {
-    foreach ($blocks['mbp_defaults'] as &$block) {
-      if (strpos($block['delta'], '-', 5)) {
-        //checks if setting the region for the default theme, not the admin theme
-        if (variable_get('theme_default', NULL) == $block['theme']) {
-          $region = substr($block['delta'], strpos($block['delta'], '-', 5) + 1);
-          $block['region'] = $region;
-          $block['status'] = '1';
-          $block['pages'] = 'node/*/edit';
-          $block['weight'] = 10;
-          $block['custom'] = 1;
-        }
-      }
-    }
-  }
-}
-
-/**
  * Constructs the renderable array from the quicktabs module
  *
- *  Implements hook_block_view().
+ * Implements hook_block_view().
  */
 function mbp_defaults_block_view($delta = '') {
   $fields = variable_get('mbp_defaults');
@@ -159,7 +201,43 @@ function mbp_defaults_block_view($delta = '') {
 }
 
 /**
- *  Implements hook_flush_caches().
+ * Implements hook_block_view_alter().
+ */
+function mbp_defaults_block_view_alter(&$data, $block) {
+  if (variable_get('mbp_defaults_contextual', 1) == 1 && module_exists('contextual')) {
+    // Add the tabs into the contextual links section.
+    if ($block->module == 'mbp_defaults') {
+      if (isset($data['content']) && !empty($data['content'])) {
+        $data['content']['#new_links'] = $data['content']['content']['content']['tabs']['tablinks'];
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_contextual_links_view_alter().
+ */
+function mbp_defaults_contextual_links_view_alter(&$element, $items) {
+
+  // Setup our contextual links for our quicktabs
+  if (isset($element['#element']['#new_links'])) {
+    foreach ($element['#element']['#new_links'] as $link) {
+      $id = 'mbp-' . preg_replace('/[^a-z0-9]/', '-', strtolower($link['#title']));
+      $element['#links'][$id] = array(
+        'title' => $link['#title'],
+        'href' => $link['#href'],
+      );
+      $element['#links'][$id] += $link['#options'];
+      $element['#links'][$id]['attributes']['rel'] = $element['#links'][$id]['attributes']['id'];
+      unset($element['#links'][$id]['attributes']['id']);
+      $element['#links'][$id]['attributes']['class'][] = 'quicktabs-contextual';
+    }
+  }
+}
+
+
+/**
+ * Implements hook_flush_caches().
  */
 function mbp_defaults_flush_caches() {
   db_delete('block')
@@ -168,7 +246,7 @@ function mbp_defaults_flush_caches() {
     ->execute();
 }
 
-/*
+/**
  * Helper Function that contains all the quicktabs settings information
  */
 function mbp_defaults_build_quicktabs($field_id, $field_name, $region) {

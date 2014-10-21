@@ -25,7 +25,7 @@ function menu_block_placement_field_info() {
   );
 }
 
-/*
+/**
  * Implements hook_field_widget_info().
  */
 function menu_block_placement_field_widget_info() {
@@ -38,7 +38,7 @@ function menu_block_placement_field_widget_info() {
 }
 
 /**
- *  Implements hook_field_create_field().
+ * Implements hook_field_create_field().
  */
 function menu_block_placement_field_create_field($field) {
   if ($field['type'] == 'menu_block_placement_reference') {
@@ -86,7 +86,7 @@ function menu_block_placement_field_settings_form($field, $instance) {
 }
 
 
-/*
+/**
  * Implements hook_field_widget_form().
  */
 function menu_block_placement_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
@@ -146,7 +146,7 @@ function menu_block_placement_field_presave($entity_type, $entity, $field, $inst
 }
 
 /**
- *  Implements hook_field_formatter_info().
+ * Implements hook_field_formatter_info().
  */
 function menu_block_placement_field_formatter_info() {
   return array(
@@ -170,7 +170,7 @@ function menu_block_placement_field_formatter_info() {
 }
 
 /**
- *  Implements hook_field_formatter_view().
+ * Implements hook_field_formatter_view().
  */
 function menu_block_placement_field_formatter_view($entity_type, $entity, &$field, $instance, $langcode, $items, $display) {
   $menu_array = _menu_block_placement_menu_items($field);
@@ -223,7 +223,7 @@ function menu_block_placement_field_formatter_view($entity_type, $entity, &$fiel
       break;
     case 'menu_block_placement_region':
       if (!empty($items[0]['region'])) {
-        $element[] = array('#markup' => $regions[$items[0]['region']],);
+        $element[] = array('#markup' => $regions[$items[0]['region']]);
       }
 
       break;
@@ -241,7 +241,7 @@ function menu_block_placement_field_formatter_view($entity_type, $entity, &$fiel
 /**
  * Removes options from the "Number of values' that aren't compatible with this field
  *
- *  Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter().
  */
 function menu_block_placement_form_field_ui_field_edit_form_alter(&$form, &$form_state, $form_id) {
   if ($form['#field']['type'] == 'menu_block_placement_reference') {
@@ -255,7 +255,7 @@ function menu_block_placement_form_field_ui_field_edit_form_alter(&$form, &$form
 /**
  * If the form contains a MBP field, adds that field name to the form state to be used in the form alter
  *
- *  Implements hook_field_widget_form_alter().
+ * Implements hook_field_widget_form_alter().
  */
 function menu_block_placement_field_widget_form_alter(&$element, &$form_state, $context) {
   if (isset($element['mlid'])) {
@@ -270,7 +270,7 @@ function menu_block_placement_field_widget_form_alter(&$element, &$form_state, $
  * Since the field must be set to unlimited items, we have to alter the form to hide duplicated
  * field widgets. This will also pull in the correct data for the field.
  *
- *  Implements hook_form_alter().
+ * Implements hook_form_alter().
  */
 function menu_block_placement_form_alter(&$form, &$form_state, $form_id) {
   if (isset($form['#entity_type']) && $form['#entity_type'] != 'node') {
@@ -341,7 +341,7 @@ function menu_block_placement_views_api() {
   );
 }
 
-/*
+/**
  * resets region variables on a cache clear.
  *
  * Implements hook_flush_caches().
@@ -351,7 +351,9 @@ function menu_block_placement_flush_caches() {
 }
 
 
-//helper function to set the variable for available regions in the select list
+/**
+ * helper function to set the variable for available regions in the select list.
+ */
 function _mbp_regions_set() {
   //creates the array for the regions select list
   $available_regions = array();
@@ -375,6 +377,11 @@ function _mbp_regions_set() {
   variable_set('mbp_regions', $available_regions);
 }
 
+/**
+ * @param $field
+ * @return array
+ * Returns the available menus for the specific field.
+ */
 function _menu_block_placement_menu_items($field) {
   $options = array();
   if (isset($field["settings"]["default_menus"])) {

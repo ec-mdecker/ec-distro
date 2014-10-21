@@ -1,17 +1,16 @@
-//moves the quicktabs links into the contextual links
-(function ($) {
-  Drupal.behaviors.mbp_defaults = {
-    'attach': function (context) {
-      $(document).ready(function () {
-        $("[id^=block-mbp-defaults-mbp-]").each(function () {
-          var links = $(this).find('ul.quicktabs-tabs').contents();
-          $(this).find('.contextual-links-wrapper:first ul').append(links);
-          $(this).find('h2.block-title:first').remove();
-          $(this).find('ul.quicktabs-tabs').remove();
-          $(this).find('li.block-configure').remove();
-        });
-      })
+/**
+ * @file
+ * Configures newly created contextual links to work with quicktabs.
+ */
 
+(function ($) {
+  Drupal.behaviors.quicktabsContextual = {
+    attach: function (context, settings) {
+      $('a.quicktabs-contextual', context).once('init-quicktabs-contextual-processed').click(function () {
+        var rel = $(this).attr('rel');
+        $('#' + rel).click();
+        return false;
+      });
     }
   }
 })(jQuery);
