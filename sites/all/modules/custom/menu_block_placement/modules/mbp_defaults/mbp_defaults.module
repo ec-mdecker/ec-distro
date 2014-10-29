@@ -268,6 +268,35 @@ function mbp_defaults_flush_caches() {
 }
 
 /**
+ * Implementes hook_preprocess_views_view_table().
+ */
+function mbp_defaults_preprocess_views_view_table(&$vars) {
+  static $counter;
+  if (!isset($counter)) {
+    $counter = 1;
+  }
+  // Check whether this table view has draggableview field.
+  if (!isset($vars['view']->field['draggableviews'])) {
+    return;
+  }
+  // Check permissions.
+  if (!user_access('access draggableviews')) {
+    return;
+  }
+  // Add table class.
+  $vars['classes_array'][] = 'draggable';
+  // Add row class.
+  foreach ($vars['row_classes'] as &$row_classes) {
+    $row_classes[] = 'draggable';
+  }
+  $vars['attributes_array']['id'] = 'draggableviews-table-' . $vars['view']->name . '-' . $vars['view']->current_display . '-' . $counter;
+  // Add javascript.
+  drupal_add_tabledrag($vars['attributes_array']['id'], 'order', 'sibling', 'draggableviews-weight');
+  $counter++;
+}
+
+
+/**
  * Helper Function that contains all the quicktabs settings information
  */
 function mbp_defaults_build_quicktabs($field_id, $field_name, $region) {
