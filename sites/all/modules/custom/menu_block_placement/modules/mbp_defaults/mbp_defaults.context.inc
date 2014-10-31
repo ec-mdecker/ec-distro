@@ -14,7 +14,8 @@ function mbp_defaults_context_default_contexts() {
 
   $blocks = array();
   foreach ($fields as $fkey => $field) {
-    if (isset(field_info_field($field)['columns']['region'])) {
+    $field_info = field_info_field($field);
+    if (isset($field_info['columns']['region'])) {
       foreach ($regions as $rkey => $rlabel) {
         $blocks["mbp_defaults-mbp-$fkey-$rkey"] = array(
           'module' => 'mbp_defaults',

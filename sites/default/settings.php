@@ -87,9 +87,7 @@ if (isset($_SERVER['PANTHEON_ENVIRONMENT'])) {
       break;
     case 'live':
       //$baseurl = 'http://www.domain.tld'; // NO trailing slash!
-      if(module_exists('environment_indicator')){
-        module_disable(array('environment_indicator'));
-      }
+      $conf['environment_indicator_overwrite'] = FALSE;
       $conf['preprocess_css'] = 1;
       $conf['preprocess_js'] = 1;
       $conf['block_cache'] = 1;
