@@ -1,5 +1,63 @@
 <?php
 
+
+if (isset($_SERVER['PANTHEON_ENVIRONMENT'])) {
+  switch ($_SERVER['PANTHEON_ENVIRONMENT']) {
+    case 'dev':
+      //$base_url = 'http://dev-sitename.gotpantheon.com'; // NO trailing slash!
+      $conf['environment_indicator_overwrite'] = TRUE;
+      $conf['environment_indicator_overwritten_name'] = 'Development Environment';
+      $conf['environment_indicator_overwritten_color'] = '#FF0000';
+      $conf['environment_indicator_overwritten_position'] = 'bottom';
+      $conf['environment_indicator_overwritten_fixed'] = TRUE;
+      $conf['environment_indicator_git_support'] = 0;
+      $conf['environment_indicator_integration'] = array(
+        'toolbar' => 0,
+        'admin_menu' => 0,
+        'navbar' => 0,
+      );
+      break;
+    case 'test':
+      //$baseurl = 'http://test-sitename.gotpantheon.com'; // NO trailing slash!
+      $conf['environment_indicator_overwrite'] = TRUE;
+      $conf['environment_indicator_overwritten_name'] = 'Testing Environment';
+      $conf['environment_indicator_overwritten_color'] = '#FF9500';
+      $conf['environment_indicator_overwritten_position'] = 'bottom';
+      $conf['environment_indicator_overwritten_fixed'] = TRUE;
+      $conf['environment_indicator_git_support'] = 0;
+      $conf['environment_indicator_integration'] = array(
+        'toolbar' => 0,
+        'admin_menu' => 0,
+        'navbar' => 0,
+      );
+      $conf['preprocess_css'] = 1;
+      $conf['preprocess_js'] = 1;
+      $conf['block_cache'] = 1;
+      $conf['cache'] = 1;
+      break;
+    case 'live':
+      //$baseurl = 'http://www.domain.tld'; // NO trailing slash!
+      $conf['environment_indicator_overwrite'] = FALSE;
+      $conf['preprocess_css'] = 1;
+      $conf['preprocess_js'] = 1;
+      $conf['block_cache'] = 1;
+      $conf['cache'] = 1;
+      break;
+  }
+} else {
+  $conf['environment_indicator_overwrite'] = TRUE;
+  $conf['environment_indicator_overwritten_name'] = 'Local Environment';
+  $conf['environment_indicator_overwritten_color'] = '#001EFF';
+  $conf['environment_indicator_overwritten_position'] = 'bottom';
+  $conf['environment_indicator_overwritten_fixed'] = TRUE;
+  $conf['environment_indicator_git_support'] = 0;
+  $conf['environment_indicator_integration'] = array(
+    'toolbar' => 0,
+    'admin_menu' => 0,
+    'navbar' => 0,
+  );
+}
+
 /**
  * @file
  * Drupal site-specific configuration file.
@@ -51,56 +109,7 @@
  * @see example.sites.php
  * @see conf_path()
  */
-if (isset($_SERVER['PANTHEON_ENVIRONMENT'])) {
-  switch ($_SERVER['PANTHEON_ENVIRONMENT']) {
-    case 'dev':
-      //$base_url = 'http://dev-sitename.gotpantheon.com'; // NO trailing slash!
-      $conf['environment_indicator_overwrite'] = TRUE;
-      $conf['environment_indicator_overwritten_name'] = 'Development Environment';
-      $conf['environment_indicator_overwritten_color'] = '#FF0000';
-      $conf['environment_indicator_overwritten_position'] = 'bottom';
-      $conf['environment_indicator_overwritten_fixed'] = TRUE;
-      $conf['environment_indicator_git_support'] = 0;
-      $conf['environment_indicator_integration'] = array(
-        'toolbar' => 0,
-        'admin_menu' => 0,
-        'navbar' => 0,
-      );
-      break;
-    case 'test':
-      //$baseurl = 'http://test-sitename.gotpantheon.com'; // NO trailing slash!
-      $conf['environment_indicator_overwrite'] = TRUE;
-      $conf['environment_indicator_overwritten_name'] = 'Testing Environment';
-      $conf['environment_indicator_overwritten_color'] = '#FF9500';
-      $conf['environment_indicator_overwritten_position'] = 'bottom';
-      $conf['environment_indicator_overwritten_fixed'] = TRUE;
-      $conf['environment_indicator_git_support'] = 0;
-      $conf['environment_indicator_integration'] = array(
-        'toolbar' => 0,
-        'admin_menu' => 0,
-        'navbar' => 0,
-      );
-      $conf['preprocess_css'] = 1;
-      $conf['preprocess_js'] = 1;
-      $conf['block_cache'] = 1;
-      $conf['cache'] = 1;
-      break;
-    case 'live':
-      //$baseurl = 'http://www.domain.tld'; // NO trailing slash!
-      $conf['environment_indicator_overwrite'] = FALSE;
-      $conf['preprocess_css'] = 1;
-      $conf['preprocess_js'] = 1;
-      $conf['block_cache'] = 1;
-      $conf['cache'] = 1;
-      break;
-  }
-} else {
-  $conf['environment_indicator_overwrite'] = TRUE;
-  $conf['environment_indicator_overwritten_name'] = 'Local Environment';
-  $conf['environment_indicator_overwritten_color'] = '#001EFF';
-  $conf['environment_indicator_overwritten_position'] = 'bottom';
-  $conf['environment_indicator_overwritten_fixed'] = TRUE;
-}
+
 
 /**
  * Database settings:
