@@ -282,9 +282,9 @@ function menu_block_placement_form_alter(&$form, &$form_state, $form_id) {
     }
   }
 
-  if (isset($form_state['mbp_fields']) && isset($form['#node_edit_form']) && $form['#node_edit_form']) {
-    $lang = $form['language']['#value'];
+  if (isset($form_state['mbp_fields'])) {
     foreach ($form_state['mbp_fields'] as $field) {
+      $lang = $form[$field]['#language'];
       //mimick a single field instead of unlimited fields
       $form[$field][$lang]['#cardinality'] = 1;
 
@@ -304,6 +304,7 @@ function menu_block_placement_form_alter(&$form, &$form_state, $form_id) {
         ->condition('entity_id', $form['nid'])
         ->condition('revision_id', $form['vid'])
         ->execute();
+
 
       //creates an array from the mlid's for the current node
       $form[$field][$lang][0]['mlid']['#default_value'] = array();
@@ -382,7 +383,7 @@ function _mbp_regions_set() {
  * @return array
  * Returns the available menus for the specific field.
  */
-function _menu_block_placement_menu_items($field) {
+function _menu_block_placement_menu_items($field = array(), $menus = NULL) {
   $options = array();
   if (isset($field["settings"]["default_menus"])) {
     $default_menus = $field["settings"]["default_menus"];
@@ -404,6 +405,24 @@ function _menu_block_placement_menu_items($field) {
           "<",
           ">"
         ), "", $value);
+      }
+    }
+  }
+  else {
+    if (!is_null($menus)) {
+      $options = array();
+      $menu_items = menu_parent_options($menus, array("mlid" => 0));
+      foreach ($menu_items as $key => $value) {
+        $exploded_key = explode(":", $key);
+        $menu_machine_name = ucwords(str_replace("-", " ", array_shift($exploded_key)));
+        $menu_id = array_pop($exploded_key);
+        if ($menu_id != 0) {
+          $value = substr($value, 0, 2) == '--' ? substr($value, 2) : $value;
+          $options[$menu_machine_name][$menu_id] = str_replace(array(
+            "<",
+            ">"
+          ), "", $value);
+        }
       }
     }
   }
