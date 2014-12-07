@@ -557,5 +557,59 @@ function feature_basic_config_strongarm() {
   $strongarm->value = 0;
   $export['menu_block_2_sort'] = $strongarm;
 
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'search_active_modules';
+  $strongarm->value = array(
+    'search_by_page' => 'search_by_page',
+    'file_entity' => 0,
+    'node' => 0,
+    'user' => 0,
+  );
+  $export['search_active_modules'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'search_by_page_default_environment';
+  $strongarm->value = 1;
+  $export['search_by_page_default_environment'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'search_by_page_settings';
+  $strongarm->value = array(
+    1 => array(
+      'environment_name' => 'Defaults',
+      'page_title' => 'Search Results',
+      'block_title' => 'Search',
+      'field_label' => 'Search for',
+      'button_label' => 'Search',
+      'page_path' => 'search',
+      'results_per_page' => 10,
+      'exclude_tags' => '',
+      'op' => 'Save configuration',
+      'sbp_nodes_types_indexed' => array(
+        'basic_page' => 'basic_page',
+        'basic_block' => 0,
+        'basic_slideshow' => 0,
+      ),
+      'sbp_nodes_display_type' => 'excerpts',
+      'sbp_nodes_role' => '1',
+      'sbp_nodes_min_time' => '3600',
+      'sbp_nodes_max_time' => '604800',
+    ),
+  );
+  $export['search_by_page_settings'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'search_default_module';
+  $strongarm->value = 'search_by_page';
+  $export['search_default_module'] = $strongarm;
+
   return $export;
 }

@@ -156,6 +156,7 @@ function search_by_page_uninstall() {
     ->execute();
 
   variable_del('search_by_page_settings');
+  variable_del('search_by_page_regions');
 }
 
 /**

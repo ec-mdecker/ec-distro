@@ -15,25 +15,21 @@ function feature_tabbed_types_node_view_alter(&$build) {
     case 'basic_tabbed_page':
     case 'basic_tabbed_block':
       if (isset($build['field_tabbed_page_tabs'])) {
-        $quicktab_settings = array(
-          'style' => $build['field_tab_style'][0]['#markup'],
+        $settings = array(
           'hide_empty_tabs' => TRUE,
-          'ajax' => TRUE,
+          'ajax' => FALSE,
         );
-        unset($build['field_tab_style']);
         $tabs = array();
-        foreach ($build['field_tabbed_page_tabs']['#items'] as $key => $item) {
+        foreach ($build['field_tabbed_page_tabs']['#items'] as $delta => $item) {
+          $tab = $build['field_tabbed_page_tabs'][$delta]['entity']['field_collection_item'][$item['value']];
           $tabs[] = array(
-            'title' => $build['field_tabbed_page_tabs'][$key]['entity']['field_collection_item'][$item['value']]['field_tab_label']['#items'][0]['value'],
-            'contents' => array(
-              '#markup' => $build['field_tabbed_page_tabs'][$key]['entity']['field_collection_item'][$item['value']]['field_tab_body']['#items'][0]['value']
-            )
+            'title' => $tab['field_tab_label'][0]['#markup'],
+            'contents' => array('#markup' => $tab['field_tab_body'][0]['#markup']),
           );
         }
-        $quicktab = quicktabs_build_quicktabs('qt_node_' . $build['#node']->nid, $quicktab_settings, $tabs);
+        $quicktab = quicktabs_build_quicktabs('content-tab', $settings, $tabs);
         $build['field_tabbed_page_tabs'] = $quicktab;
       }
       break;
-
   }
 }
