@@ -463,14 +463,14 @@ function feature_basic_config_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'menu_block_1_admin_title';
-  $strongarm->value = 'Menu Block - Main Menu, Level: 2, Depth: 1';
+  $strongarm->value = '';
   $export['menu_block_1_admin_title'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'menu_block_1_depth';
-  $strongarm->value = '1';
+  $strongarm->value = '0';
   $export['menu_block_1_depth'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -595,11 +595,12 @@ function feature_basic_config_strongarm() {
         'basic_page' => 'basic_page',
         'basic_block' => 0,
         'basic_slideshow' => 0,
+        'events' => 0,
       ),
       'sbp_nodes_display_type' => 'excerpts',
       'sbp_nodes_role' => '1',
-      'sbp_nodes_min_time' => '3600',
-      'sbp_nodes_max_time' => '604800',
+      'sbp_nodes_min_time' => '1',
+      'sbp_nodes_max_time' => '86400',
     ),
   );
   $export['search_by_page_settings'] = $strongarm;

@@ -445,6 +445,17 @@ function search_by_page_path_field_prefix() {
 }
 
 /**
+ *  Implements hook_views_pre_build().
+ *
+ * Sets views to unlimited results so all pages get indexed
+ */
+function search_by_page_views_pre_build(&$view) {
+  if(strpos(request_uri(), 'cron') !== FALSE) {
+    $view->set_items_per_page('0');
+  }
+}
+
+/**
  * Returns the content portion of the rendered page at the given path.
  *
  * Note: As a side effect, theme, pager, and page title variables may be
@@ -463,7 +474,6 @@ function search_by_page_page_content($path) {
   menu_set_active_item($path);
   $save_get = $_GET;
   $save_content = drupal_set_page_content();
-
   // Separate path into main part and query.
   $parts = search_by_page_path_parts($path);
   $path = drupal_get_normal_path($parts[0]);
@@ -511,7 +521,6 @@ function search_by_page_page_content($path) {
       $content .= drupal_render($page[$region]);
     }
   }
-
   $_GET = $save_get;
   drupal_set_page_content($save_content);
   drupal_static('system_main_content_added', FALSE);

@@ -11,18 +11,39 @@ index f004434..be11a04 100644
  
  /**
 diff --git a/search_by_page.module b/search_by_page.module
-index 7826c7b..0aae75a 100644
+index 7826c7b..594cf6c 100644
 --- a/search_by_page.module
 +++ b/search_by_page.module
-@@ -460,6 +460,7 @@ function search_by_page_path_field_prefix() {
+@@ -445,6 +445,17 @@ function search_by_page_path_field_prefix() {
+ }
+ 
+ /**
++ *  Implements hook_views_pre_build().
++ *
++ * Sets views to unlimited results so all pages get indexed
++ */
++function search_by_page_views_pre_build(&$view) {
++  if(strpos(request_uri(), 'cron') !== FALSE) {
++    $view->set_items_per_page('0');
++  }
++}
++
++/**
+  * Returns the content portion of the rendered page at the given path.
+  *
+  * Note: As a side effect, theme, pager, and page title variables may be
+@@ -460,9 +471,9 @@ function search_by_page_path_field_prefix() {
   *   page content if all is well.
   */
  function search_by_page_page_content($path) {
 +  menu_set_active_item($path);
    $save_get = $_GET;
    $save_content = drupal_set_page_content();
- 
-@@ -488,12 +489,10 @@ function search_by_page_page_content($path) {
+-
+   // Separate path into main part and query.
+   $parts = search_by_page_path_parts($path);
+   $path = drupal_get_normal_path($parts[0]);
+@@ -488,12 +499,10 @@ function search_by_page_page_content($path) {
  
    // If we get here, we'll follow what drupal_render_page does to let
    // other modules alter the page.
@@ -35,11 +56,12 @@ index 7826c7b..0aae75a 100644
    foreach (module_implements('page_build') as $module) {
      $function = ($module == 'block') ? '_search_by_page_build_content_blocks' : $module . '_page_build';
      $function($page);
-@@ -505,7 +504,13 @@ function search_by_page_page_content($path) {
+@@ -505,8 +514,13 @@ function search_by_page_page_content($path) {
      $page['content']['system_main'] = drupal_set_page_content();
    }
  
 -  $content = drupal_render($page['content']);
+-
 +  $content = '';
 +  $regions = variable_get('search_by_page_regions', array('content'=>'content')) ;
 +  foreach ($regions as $region) {
@@ -47,10 +69,10 @@ index 7826c7b..0aae75a 100644
 +      $content .= drupal_render($page[$region]);
 +    }
 +  }
- 
    $_GET = $save_get;
    drupal_set_page_content($save_content);
-@@ -546,8 +551,11 @@ function search_by_page_stored_page_content($module, $modid, $environment) {
+   drupal_static('system_main_content_added', FALSE);
+@@ -546,8 +560,11 @@ function search_by_page_stored_page_content($module, $modid, $environment) {
   * we avoid building blocks for regions other than 'content'.
   */
  function _search_by_page_build_content_blocks(&$page) {
@@ -64,7 +86,7 @@ index 7826c7b..0aae75a 100644
    }
    drupal_static_reset('block_list');
  }
-@@ -606,6 +614,13 @@ function search_by_page_form_search_admin_settings_alter(&$form, $form_state) {
+@@ -606,6 +623,13 @@ function search_by_page_form_search_admin_settings_alter(&$form, $form_state) {
    $items = drupal_map_assoc(array(0, 10, 20, 50, 100, 200, 500));
    $form['indexing_throttle']['search_cron_limit']['#options'] = $items;
    $form['indexing_throttle']['search_cron_limit']['#description'] = t('The maximum number of items indexed in each pass of a <a href="@cron">cron maintenance task</a> by search modules that do not set their own defaults (such as the core Node module that indexes content items). If necessary, reduce the number of items to prevent timeouts and memory errors while indexing.', array('@cron' => url('admin/reports/status')));
@@ -78,7 +100,7 @@ index 7826c7b..0aae75a 100644
  }
  
  /**
-@@ -624,8 +639,21 @@ function search_by_page_search_admin() {
+@@ -624,8 +648,21 @@ function search_by_page_search_admin() {
      '#markup' => '<p>' . l(t('Configure Search by Page settings'),
        'admin/config/search/search_by_page') . '</p>',
    );
