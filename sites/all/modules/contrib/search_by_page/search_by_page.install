@@ -138,6 +138,11 @@ function search_by_page_install() {
     $active[] = 'search_by_page';
     variable_set('search_active_modules', $active);
   }
+
+  db_update('system')
+    ->fields(array('weight' => '-10'))
+    ->condition('name', 'search_by_page', '=')
+    ->execute();
 }
 
 /**

@@ -21,7 +21,7 @@ function mbp_defaults_permission() {
  */
 function mbp_defaults_menu() {
   $items = array(
-    'admin/config/mbp/defaults' => array(
+    'admin/config/content/mbp/defaults' => array(
       'title' => "Menu Block Placement Defaults",
       'description' => 'Apply settings for pre-configured blocks.',
       'page callback' => 'drupal_get_form',
