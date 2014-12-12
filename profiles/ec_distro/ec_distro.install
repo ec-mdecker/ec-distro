@@ -13,10 +13,10 @@ function ec_distro_install() {
   features_revert();
 
   // ignore any rebuild messages
-  //node_access_needs_rebuild(FALSE);
+  node_access_needs_rebuild(FALSE);
 
-// ignore any other install messages
- // drupal_get_messages();
+  // ignore any other install messages
+  //drupal_get_messages();
 
   // Create a default role for site administrators, with all available permissions assigned.
   $role = new stdClass();
@@ -50,13 +50,17 @@ function ec_distro_install() {
   // sets the 403 & 404 variables for the first nodes created above.
   variable_set('site_403', 'node/1');
   variable_set('site_404', 'node/2');
+  // sets the node options which aren't contained in the feature.
+  variable_set('node_options_basic_page', array('status'));
+  variable_set('node_options_basic_block', array('status'));
+  variable_set('node_options_basic_slideshow', array('status'));
+  variable_set('node_options_basic_event', array('status'));
 
   $permissions = array(
     'anonymous user' => array(
       'access content' => 1,
       'search content' => 1,
       'view files' => 1,
-      'search page environment Defaults' => 1,
     ),
     'authenticated user' => array(
       'access content' => 1,
@@ -65,13 +69,12 @@ function ec_distro_install() {
       'use text format basic_html' => 1,
       'view own files' => 1,
       'view own unpublished content' => 1,
-      'search page environment Defaults' => 1,
     ),
   );
 
   // obtains all the roles and role IDs
-  $query = db_select('role', 'rid')
-    ->fields('rid', array('rid', 'name'))
+  $query = db_select('role', 'r')
+    ->fields('r', array('rid', 'name'))
     ->execute();
 
   // loops through all the roles and sets the permissions if the role exists
@@ -81,9 +84,4 @@ function ec_distro_install() {
       user_role_change_permissions($row['rid'], $permissions[$row['name']]);
     }
   }
-
-  variable_set('node_options_basic_page', array('status'));
-  variable_set('node_options_basic_block', array('status'));
-  variable_set('node_options_basic_slideshow', array('status'));
-  variable_set('node_options_basic_event', array('status'));
 }

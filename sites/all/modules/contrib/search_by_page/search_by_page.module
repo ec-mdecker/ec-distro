@@ -463,21 +463,6 @@ function search_by_page_views_pre_build(&$view) {
   if($cron_running) {
     $view->set_items_per_page('0');
   }
-
-
-  $data = file('/var/www/ec-distro/debug/cron.log');
-  $line = $data[count($data)-1];
-  $line = explode('|', $line);
-  $lastcron = trim($line[1]) === 'NULL' ? NULL : trim($line[1]);
-  $line = explode(':', $line[0]);
-  $lasthour = (int)$line[0];
-  $lastminute = (int)$line[1];
-  $hour = (int)date('H');
-  $minute = (int)date('i');
-
-  if($lasthour != $hour || abs((int)$lastminute - (int)$minute) > 1 || $lastcron !== $cron_running){
-    file_put_contents('/var/www/ec-distro/debug/cron.log', date('H:i') .'|' . var_export($cron_running, TRUE) . "\n", FILE_APPEND);
-  }
 }
 
 /**

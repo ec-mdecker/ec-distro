@@ -1,5 +1,6 @@
 <?php
-/*
+
+/**
 * Implements hook_install_tasks_alter()
 *
 * Skips the language selection screen
