@@ -809,6 +809,7 @@ function workbench_moderation_node_type_form_validate($from, &$form_state) {
  * Forcing new reversion and publishing.
  */
 function workbench_moderation_form_node_form_alter(&$form, $form_state) {
+  dpm($form);
   global $user;
 
   // This must be a node form and a type that has moderation enabled

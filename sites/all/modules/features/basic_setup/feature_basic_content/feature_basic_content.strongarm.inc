@@ -191,7 +191,7 @@ function feature_basic_content_strongarm() {
           'weight' => '0',
         ),
         'path' => array(
-          'weight' => '5',
+          'weight' => '20',
         ),
       ),
       'display' => array(),
@@ -230,10 +230,10 @@ function feature_basic_content_strongarm() {
     'extra_fields' => array(
       'form' => array(
         'title' => array(
-          'weight' => '0',
+          'weight' => '1',
         ),
         'path' => array(
-          'weight' => '30',
+          'weight' => '3',
         ),
       ),
       'display' => array(),
@@ -286,22 +286,32 @@ function feature_basic_content_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'insert_view_admin_views_comment_displays';
+  $strongarm->value = array(
+    'admin_views_comment=system_1' => 'admin_views_comment=system_1',
+    'admin_views_comment=system_2' => 'admin_views_comment=system_2',
+  );
+  $export['insert_view_admin_views_comment_displays'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'insert_view_mbp_13_displays';
+  $strongarm->value = array(
+    'mbp_13=block' => 'mbp_13=block',
+    'mbp_13=block_1' => 'mbp_13=block_1',
+  );
+  $export['insert_view_mbp_13_displays'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'insert_view_mbp_6_displays';
   $strongarm->value = array(
     'mbp_6=block' => 'mbp_6=block',
     'mbp_6=block_1' => 'mbp_6=block_1',
   );
   $export['insert_view_mbp_6_displays'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'insert_view_mbp_7_displays';
-  $strongarm->value = array(
-    'mbp_7=block' => 'mbp_7=block',
-    'mbp_7=block_1' => 'mbp_7=block_1',
-  );
-  $export['insert_view_mbp_7_displays'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */

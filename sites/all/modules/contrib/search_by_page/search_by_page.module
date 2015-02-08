@@ -531,6 +531,8 @@ function search_by_page_page_content($path) {
       $content .= drupal_render($page[$region]);
     }
   }
+  watchdog('test', $content);
+
   $_GET = $save_get;
   drupal_set_page_content($save_content);
   drupal_static('system_main_content_added', FALSE);

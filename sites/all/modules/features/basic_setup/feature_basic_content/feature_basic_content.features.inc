@@ -38,7 +38,7 @@ function feature_basic_content_image_default_styles() {
   // Exported image style: slideshow_image.
   $styles['slideshow_image'] = array(
     'name' => 'slideshow_image',
-    'label' => 'Slideshow Image',
+    'label' => 'Slideshow Image (620 x 280)',
     'effects' => array(
       1 => array(
         'label' => 'Scale and crop',
@@ -50,8 +50,8 @@ function feature_basic_content_image_default_styles() {
         'module' => 'image',
         'name' => 'image_scale_and_crop',
         'data' => array(
-          'width' => 960,
-          'height' => 360,
+          'width' => 620,
+          'height' => 280,
         ),
         'weight' => 1,
       ),

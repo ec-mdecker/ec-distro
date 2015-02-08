@@ -56,7 +56,7 @@ function ec_distro_install() {
   variable_set('node_options_basic_slideshow', array('status'));
   variable_set('node_options_basic_event', array('status'));
   $search_by_page_settings = array(
-    array(
+    1 => array(
       'environment_name' => 'Full Site',
       'page_title' => 'Search Results',
       'block_title' => 'Search',

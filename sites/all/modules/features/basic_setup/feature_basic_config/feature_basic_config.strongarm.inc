@@ -453,14 +453,14 @@ function feature_basic_config_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'menu_block_1_admin_title';
-  $strongarm->value = '';
+  $strongarm->value = 'Main Menu: Level  - 2nd; Depth - 1';
   $export['menu_block_1_admin_title'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'menu_block_1_depth';
-  $strongarm->value = '0';
+  $strongarm->value = '1';
   $export['menu_block_1_depth'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -501,8 +501,15 @@ function feature_basic_config_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'menu_block_1_title_link';
+  $strongarm->value = 0;
+  $export['menu_block_1_title_link'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'menu_block_2_admin_title';
-  $strongarm->value = 'Menu Block - Main Menu, Level: 3, Depth: 1';
+  $strongarm->value = 'Main Menu: Level  - 3rd; Depth - 1';
   $export['menu_block_2_admin_title'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -546,6 +553,13 @@ function feature_basic_config_strongarm() {
   $strongarm->name = 'menu_block_2_sort';
   $strongarm->value = 0;
   $export['menu_block_2_sort'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'menu_block_2_title_link';
+  $strongarm->value = 0;
+  $export['menu_block_2_title_link'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
