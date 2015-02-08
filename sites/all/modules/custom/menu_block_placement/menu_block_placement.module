@@ -283,34 +283,37 @@ function menu_block_placement_form_alter(&$form, &$form_state, $form_id) {
   }
 
   if (isset($form_state['mbp_fields'])) {
-    foreach ($form_state['mbp_fields'] as $field) {
-      $lang = $form[$field]['#language'];
+    foreach ($form_state['mbp_fields'] as $field) {;
       //mimick a single field instead of unlimited fields
-      $form[$field][$lang]['#cardinality'] = 1;
+      $form[$field][LANGUAGE_NONE]['#cardinality'] = 1;
 
       //unsets all repeated field settings
-      foreach ($form[$field][$lang] as $key => $value) {
+      foreach ($form[$field][LANGUAGE_NONE] as $key => $value) {
         if (isset($value['mlid']) && $key != 0) {
-          unset($form[$field][$lang][$key]);
+          unset($form[$field][LANGUAGE_NONE][$key]);
         }
       }
 
       //unsets add more
-      unset($form[$field][$lang]['add_more']);
+      unset($form[$field][LANGUAGE_NONE]['add_more']);
 
       //queries the db to find all the mlid's for the current node
-      $items = db_select('field_data_' . $field, 'f')
-        ->fields('f', array($field . '_mlid'))
-        ->condition('entity_id', $form['nid'])
-        ->condition('revision_id', $form['vid'])
-        ->execute();
+      $items = array();
+      //dpm($form);
+      if(isset($form['nid'])) {
+        $items = db_select('field_data_' . $field, 'f')
+          ->fields('f', array($field . '_mlid'))
+          ->condition('entity_id', $form['nid']['#value'])
+          ->condition('revision_id', $form['vid'])
+          ->execute();
+      }
 
 
       //creates an array from the mlid's for the current node
-      $form[$field][$lang][0]['mlid']['#default_value'] = array();
+      $form[$field][LANGUAGE_NONE][0]['mlid']['#default_value'] = array();
       foreach ($items as $item) {
         $item = (array) $item;
-        $form[$field][$lang][0]['mlid']['#default_value'][] = $item[$field . '_mlid'];
+        $form[$field][LANGUAGE_NONE][0]['mlid']['#default_value'][] = $item[$field . '_mlid'];
       }
     }
   }
@@ -349,7 +352,7 @@ function _menu_block_placement_reindex($node) {
     foreach ($fields = field_info_field_map() as $key => $field) {
       if ($field['type'] == 'menu_block_placement_reference' && isset($node->$key)) {
         $field_data = $node->$key;
-        foreach ($field_data['und'] as $delta => $value) {
+        foreach ($field_data[LANGUAGE_NONE] as $delta => $value) {
           $mlid = $value['mlid'];
           $menu_item = menu_link_load($mlid);
           if (strpos($menu_item['link_path'], 'node') !== FALSE) {

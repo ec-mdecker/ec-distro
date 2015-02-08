@@ -143,7 +143,6 @@ function mbp_defaults_ctools_plugin_api($owner, $api) {
 function mbp_defaults_views_query_alter(&$view, &$query) {
   $tags = explode(', ', $view->tag);
   if (in_array('mbp_defaults', $tags) && $view->type == 'Default') {
-
     // if the view contains a region and individual_pages fields
     if (in_array('mbp_regions', $tags) && in_array('mbp_individual', $tags)) {
       if (isset($query->where[1]) && isset($query->where[0]) && isset($query->where[0]['conditions'][0]) && isset($query->where[0]['conditions'][1]) && isset($query->where[0]['conditions'][2])) {
@@ -173,7 +172,7 @@ function mbp_defaults_views_query_alter(&$view, &$query) {
  * Implements hook_views_ui_display_top_links_alter().
  */
 function mbp_defaults_views_ui_display_top_links_alter(&$links, $view, $display_id) {
-  if ($view->export_module == 'mbp_defaults' && $view->type != 'Default') {
+  if (isset($view->export_module) && $view->export_module == 'mbp_defaults' && $view->type != 'Default') {
     $tags = explode(', ', $view->tag);
     if (in_array('mbp_individual', $tags) && !variable_get('mbp_defaults_supress', 0)) {
       drupal_set_message(t('This view is not in default state. Query alter will not function as intended. Supress these messages <a href="/admin/config/content/mbp/defaults">here</a>'), 'warning');

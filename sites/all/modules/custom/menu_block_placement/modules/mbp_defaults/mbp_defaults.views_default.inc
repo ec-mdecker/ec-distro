@@ -74,6 +74,7 @@ function mbp_defaults_views_default_views() {
     $handler->display->display_options['arguments'][$field_name . '_mlid']['summary']['format'] = 'default_summary';
     $handler->display->display_options['arguments'][$field_name . '_mlid']['summary_options']['items_per_page'] = '25';
     $handler->display->display_options['arguments'][$field_name . '_mlid']['limit'] = '0';
+    $handler->display->display_options['arguments'][$field_name . '_mlid']['break_phrase'] = TRUE;
     /* Contextual filter:  Content: Block Settings:mlid */
     if ($individual) {
       $handler->display->display_options['arguments'][$field_name . '_mlid_1']['id'] = $field_name . '_mlid_1';

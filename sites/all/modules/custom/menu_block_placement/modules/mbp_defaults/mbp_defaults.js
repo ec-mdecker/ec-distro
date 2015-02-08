@@ -11,6 +11,8 @@
         $('#' + rel).click();
         return false;
       });
+
+      $('.block-mbp-defaults').find('ul.quicktabs-tabs').hide();
     }
   }
 })(jQuery);
