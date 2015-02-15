@@ -283,7 +283,8 @@ function menu_block_placement_form_alter(&$form, &$form_state, $form_id) {
   }
 
   if (isset($form_state['mbp_fields'])) {
-    foreach ($form_state['mbp_fields'] as $field) {;
+    foreach ($form_state['mbp_fields'] as $field) {
+      //$lang = $form[$field]['#language'];
       //mimick a single field instead of unlimited fields
       $form[$field][LANGUAGE_NONE]['#cardinality'] = 1;
 

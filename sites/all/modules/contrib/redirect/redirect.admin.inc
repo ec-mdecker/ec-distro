@@ -336,10 +336,6 @@ function redirect_edit_form($form, &$form_state, $redirect = NULL) {
     '#type' => 'value',
     '#value' => $redirect->hash,
   );
-  $form['uid'] = array(
-    '#type' => 'value',
-    '#value' => $redirect->uid,
-  );
 
   $form['source'] = array(
     '#type' => 'textfield',
@@ -469,10 +465,7 @@ function redirect_element_validate_redirect($element, &$form_state) {
   // Normalize the path.
   $value = drupal_get_normal_path($value, $form_state['values']['language']);
 
-  // We use the encoded URL for most checks, except the check against <front>
-  $testvalue = drupal_encode_path($value);
-
-  if (!valid_url($testvalue) && !valid_url($testvalue, TRUE) && $value != '<front>' && $testvalue != '') {
+  if (!valid_url($value) && !valid_url($value, TRUE) && $value != '<front>' && $value != '') {
     form_error($element, t('The redirect path %value is not valid.', array('%value' => $value)));
   }
 
