@@ -72,27 +72,6 @@ function media_display_migrate_schema() {
  * calls the function to populate the database with the initial styles on module enable/site spin up, if the file exists
  */
 function media_display_migrate_install() {
-  /*
-  if (file_exists(drupal_get_path('module', 'media_display_migrate') . "/file_display.csv")) {
-    $display = array();
-    $file = fopen(drupal_get_path('module', 'media_display_migrate') . "/file_display.csv", "r");
-    while (!feof($file)) {
-      array_push($display, fgetcsv($file));
-    }
-    fclose($file);
-    foreach ($display as $row) {
-      if ($row[0] != NULL) {
-        db_merge('file_display')
-          ->key(array('name' => $row[0]))
-          ->fields(array(
-            'name' => $row[0],
-            'weight' => $row[1],
-            'status' => $row[2],
-            'settings' => $row[3],
-          ))->execute();
-      }
-    }
-  }*/
   _media_migrate_default_import();
 
   //Creates the directory for upload functionality

@@ -106,6 +106,32 @@ function feature_basic_config_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'entity_view_modes';
+  $strongarm->value = array(
+    'file' => array(
+      'colorbox' => array(
+        'label' => 'Colorbox',
+        'custom settings' => 1,
+      ),
+      'medium_image' => array(
+        'label' => 'Medium Image',
+        'custom settings' => 1,
+      ),
+      'large_image' => array(
+        'label' => 'Large Image',
+        'custom settings' => 1,
+      ),
+      'original_image' => array(
+        'label' => 'Original Image',
+        'custom settings' => 1,
+      ),
+    ),
+  );
+  $export['entity_view_modes'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'environment_indicator_git_support';
   $strongarm->value = 0;
   $export['environment_indicator_git_support'] = $strongarm;
@@ -203,7 +229,20 @@ function feature_basic_config_strongarm() {
   $strongarm->api_version = 1;
   $strongarm->name = 'field_bundle_settings_file__audio';
   $strongarm->value = array(
-    'view_modes' => array(),
+    'view_modes' => array(
+      'colorbox' => array(
+        'custom_settings' => FALSE,
+      ),
+      'medium_image' => array(
+        'custom_settings' => FALSE,
+      ),
+      'large_image' => array(
+        'custom_settings' => FALSE,
+      ),
+      'original_image' => array(
+        'custom_settings' => FALSE,
+      ),
+    ),
     'extra_fields' => array(
       'form' => array(),
       'display' => array(),
@@ -224,7 +263,7 @@ function feature_basic_config_strongarm() {
         'custom_settings' => FALSE,
       ),
       'preview' => array(
-        'custom_settings' => TRUE,
+        'custom_settings' => FALSE,
       ),
       'rss' => array(
         'custom_settings' => FALSE,
@@ -236,6 +275,18 @@ function feature_basic_config_strongarm() {
         'custom_settings' => FALSE,
       ),
       'token' => array(
+        'custom_settings' => FALSE,
+      ),
+      'colorbox' => array(
+        'custom_settings' => FALSE,
+      ),
+      'medium_image' => array(
+        'custom_settings' => FALSE,
+      ),
+      'large_image' => array(
+        'custom_settings' => FALSE,
+      ),
+      'original_image' => array(
         'custom_settings' => FALSE,
       ),
     ),
@@ -262,6 +313,10 @@ function feature_basic_config_strongarm() {
             'weight' => '0',
             'visible' => TRUE,
           ),
+          'file_link' => array(
+            'weight' => '0',
+            'visible' => TRUE,
+          ),
         ),
       ),
     ),
@@ -275,13 +330,13 @@ function feature_basic_config_strongarm() {
   $strongarm->value = array(
     'view_modes' => array(
       'teaser' => array(
-        'custom_settings' => TRUE,
+        'custom_settings' => FALSE,
       ),
       'full' => array(
-        'custom_settings' => TRUE,
+        'custom_settings' => FALSE,
       ),
       'preview' => array(
-        'custom_settings' => TRUE,
+        'custom_settings' => FALSE,
       ),
       'rss' => array(
         'custom_settings' => FALSE,
@@ -294,6 +349,18 @@ function feature_basic_config_strongarm() {
       ),
       'token' => array(
         'custom_settings' => FALSE,
+      ),
+      'colorbox' => array(
+        'custom_settings' => TRUE,
+      ),
+      'medium_image' => array(
+        'custom_settings' => TRUE,
+      ),
+      'large_image' => array(
+        'custom_settings' => TRUE,
+      ),
+      'original_image' => array(
+        'custom_settings' => TRUE,
       ),
     ),
     'extra_fields' => array(
@@ -314,6 +381,26 @@ function feature_basic_config_strongarm() {
           ),
           'preview' => array(
             'weight' => 55,
+            'visible' => TRUE,
+          ),
+          'colorbox' => array(
+            'weight' => '0',
+            'visible' => TRUE,
+          ),
+          'small_image' => array(
+            'weight' => '0',
+            'visible' => TRUE,
+          ),
+          'medium_image' => array(
+            'weight' => '0',
+            'visible' => TRUE,
+          ),
+          'large_image' => array(
+            'weight' => '0',
+            'visible' => TRUE,
+          ),
+          'original_image' => array(
+            'weight' => '0',
             'visible' => TRUE,
           ),
         ),
@@ -347,6 +434,18 @@ function feature_basic_config_strongarm() {
         'custom_settings' => FALSE,
       ),
       'token' => array(
+        'custom_settings' => FALSE,
+      ),
+      'colorbox' => array(
+        'custom_settings' => FALSE,
+      ),
+      'medium_image' => array(
+        'custom_settings' => FALSE,
+      ),
+      'large_image' => array(
+        'custom_settings' => FALSE,
+      ),
+      'original_image' => array(
         'custom_settings' => FALSE,
       ),
     ),
