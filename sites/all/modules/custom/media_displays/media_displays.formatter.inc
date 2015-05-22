@@ -13,20 +13,16 @@
  */
 function theme_media_displays_download_file_alt($variables) {
   $output = '';
+//  dpm($variables);
+
   foreach ($variables['items'] as $delta => $item) {
     if (!empty($item)) {
-//      if(isset($item['field_alt_text']) && !empty($item['field_alt_text'])){
-//        $item['field_alt_text']['und'][0]['value'] = htmlspecialchars_decode($item['field_alt_text']['und'][0]['value']);
-//      }
       $output .= theme('media_displays_download_alt_item',
         array('file' => (object) $item));
     }
   }
-
   return $output;
-
 }
-
 
 
 /**
@@ -45,21 +41,30 @@ function theme_media_displays_download_alt_item($variables) {
     return '';
   }
 
-  $url = file_create_url($file->uri);
-  $options = array();
+  $json = array(
+    'fid' => $file->fid,
+    'direct_download' => TRUE,
+    'type' => 'media',
+    'fields' => array(),
+    'attributes' => array(),
+);
 
   // Use the description or the title as the link text if available.
   if (!isset($file->field_alt_text['und']) && empty($file->field_alt_text['und'][0]['value'])) {
-    $link_text = $file->filename;
+    $json['fields']['link_text'] = $file->filename . 'testsa';
   }
   else {
-    $link_text = $file->field_alt_text['und'][0]['value'];
-
-    $options['attributes']['title'] = $file->filename;
+    $json['fields']['link_text'] = $file->field_alt_text['und'][0]['value'];
+  }
+  // Use the description or the title as the link text if available.
+  if (!isset($file->field_document_title['und']) && empty($file->field_document_title['und'][0]['value'])) {
+    $json['fields']['title'] = $file->filename;
+  }
+  else {
+    $json['fields']['title'] = $file->field_document_title['und'][0]['value'];
   }
 
-  $link_text = htmlspecialchars_decode($link_text , ENT_QUOTES);
-  return l($link_text, $url, $options);
+  return '[[' . json_encode($json) . ']]';
 }
 
 /**
