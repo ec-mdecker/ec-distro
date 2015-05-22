@@ -14,9 +14,6 @@ class views_plugin_argument_default_menu_block_placement extends views_plugin_ar
    */
   function get_argument() {
     $path = current_path();
-    if ($path == variable_get('site_frontpage', 'node')) {
-      $path = '<front>';
-    }
     $menus = array();
     foreach ($this->view->argument as $arg) {
       if (strpos($arg->options['default_argument_type'], 'menu_block_placement_mlid') !== FALSE) {
@@ -35,6 +32,18 @@ class views_plugin_argument_default_menu_block_placement extends views_plugin_ar
       for ($i = 1; $i < 9; $i++) {
         if ($row['p' . $i]) {
           $mlids[] = $row['p' . $i];
+        }
+      }
+
+      if ($path == variable_get('site_frontpage', 'node')) {
+        $row = db_select('menu_links', 'm')
+          ->fields('m')
+          ->condition('menu_name', $menu)
+          ->condition('link_path', '<front>')
+          ->execute()
+          ->fetchAssoc();
+        if($row){
+          $mlids[] = $row['mlid'];
         }
       }
     }

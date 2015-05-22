@@ -20,6 +20,7 @@ dependencies[] = media
 dependencies[] = menu
 dependencies[] = menu_block
 dependencies[] = menu_block_placement
+dependencies[] = mbp_defaults
 dependencies[] = options
 dependencies[] = quicktabs
 dependencies[] = quicktabs_tabstyles
